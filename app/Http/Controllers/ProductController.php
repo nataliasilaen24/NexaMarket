@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\price;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
