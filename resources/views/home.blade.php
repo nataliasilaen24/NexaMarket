@@ -64,20 +64,6 @@
         .search-btn:hover {
             background: #1d4ed8;
         }
-        .popular-keywords {
-            display: flex;
-            gap: 12px;
-            margin-top: 5px;
-            font-size: 11px;
-        }
-        .popular-keywords a {
-            color: #64748b;
-            text-decoration: none;
-        }
-        .popular-keywords a:hover {
-            color: #2563eb;
-            text-decoration: underline;
-        }
         .header-right {
             display: flex;
             align-items: center;
@@ -292,20 +278,15 @@
 </head>
 <body>
 
-    <!-- Header Biru NexaMarket dengan Urutan Menu Baru -->
+    <!-- Header Biru NexaMarket -->
     <header>
         <a href="{{ url('/') }}" class="logo">NexaMarket</a>
 
-        <!-- Form Pencarian -->
+        <!-- Form Pencarian (Tanpa teks rekomendasi di bawahnya) -->
         <form action="{{ url('/') }}" method="GET" class="search-container">
             <div class="search-box">
                 <input type="text" name="search" placeholder="Cari produk di NexaMarket..." value="{{ request('search') }}" class="search-input">
                 <button type="submit" class="search-btn">Cari</button>
-            </div>
-            <div class="popular-keywords">
-                <a href="{{ url('/?search=Elektronik') }}">Elektronik</a>
-                <a href="{{ url('/?search=Fashion') }}">Fashion</a>
-                <a href="{{ url('/?search=Sepatu') }}">Sepatu</a>
             </div>
         </form>
 
