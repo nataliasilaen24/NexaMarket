@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -144,7 +143,8 @@
         <nav>
             <a href="{{ url('/') }}">Home</a>
             <a href="{{ route('products.index') }}">Produk</a>
-            <a href="#">Kategori</a>
+            <!-- Perbaikan: Menu Kategori diarahkan ke route categories.index -->
+            <a href="{{ route('categories.index') }}">Kategori</a>
             <a href="#kontak">Kontak</a>
         </nav>
     </header>
