@@ -3,128 +3,142 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\price;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    // Menampilkan semua produk
+    /**
+     * Menampilkan halaman utama toko (homepage) dengan produk terbaru & fitur pencarian.
+     */
+    public function home(Request $request)
+    {
+        $search = $request->input('search');
+
+        // Mengambil produk dengan relasi kategori, filter pencarian (ilike untuk PostgreSQL), dan urutan terbaru
+        $products = Product::with('category')
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'ilike', '%' . $search . '%');
+            })
+            ->latest()
+            ->get();
+
+        return view('home', compact('products'));
+    }
+
+    /**
+     * Menampilkan daftar produk.
+     */
     public function index()
     {
-        $products = Product::with('category')
-            ->latest()
-            ->paginate(10);
-
+        $products = Product::with('category')->latest()->get();
         return view('products.index', compact('products'));
     }
 
-    // Menampilkan halaman tambah produk
+    /**
+     * Menampilkan form tambah produk.
+     */
     public function create()
     {
         $categories = Category::all();
-
         return view('products.create', compact('categories'));
     }
 
-    // Menyimpan produk baru
+    /**
+     * Menyimpan produk baru ke database.
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
+        $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Upload gambar produk
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')
-                ->store('products', 'public');
+            $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        // Membuat slug produk
-        $validated['slug'] = Str::slug($validated['name'])
-            . '-' . Str::lower(Str::random(6));
+        Product::create([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
 
-        Product::create($validated);
-
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
-    // Menampilkan detail produk
+    /**
+     * Menampilkan detail produk tertentu.
+     */
     public function show(Product $product)
     {
-        $product->load('category');
-
         return view('products.show', compact('product'));
     }
 
-    // Menampilkan halaman edit
+    /**
+     * Menampilkan form edit produk.
+     */
     public function edit(Product $product)
     {
         $categories = Category::all();
-
         return view('products.edit', compact('product', 'categories'));
     }
 
-    // Memperbarui produk
+    /**
+     * Memperbarui data produk di database.
+     */
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
+        $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Memperbarui slug jika nama produk berubah
-        if ($product->name !== $validated['name']) {
-            $validated['slug'] = Str::slug($validated['name'])
-                . '-' . Str::lower(Str::random(6));
-        }
-
-        // Mengganti gambar lama dengan gambar baru
+        $imagePath = $product->image;
         if ($request->hasFile('image')) {
-
-            // Hapus gambar lama jika tersedia
-            if ($product->image) {
+            // Hapus gambar lama jika ada
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-
-            // Simpan gambar baru
-            $validated['image'] = $request->file('image')
-                ->store('products', 'public');
+            $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        $product->update($validated);
+        $product->update([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
-    // Menghapus produk
+    /**
+     * Menghapus produk dari database.
+     */
     public function destroy(Product $product)
     {
-        // Hapus gambar produk dari storage
-        if ($product->image) {
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
 
-        // Hapus data produk dari database
         $product->delete();
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }

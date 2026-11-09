@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Kategori - NexaMarket</title>
+    <title>Keranjang Belanja - NexaMarket</title>
     <style>
         * {
             margin: 0;
@@ -40,7 +40,7 @@
         .container {
             max-width: 1000px;
             margin: 40px auto;
-            padding: 20px;
+            padding: 30px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 10px #ddd;
@@ -48,18 +48,6 @@
         h1 {
             margin-bottom: 20px;
             color: #172554;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-        .btn:hover {
-            background: #1d4ed8;
         }
         table {
             width: 100%;
@@ -70,9 +58,16 @@
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            vertical-align: middle;
         }
         th {
             background: #f1f5f9;
+        }
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
         }
         .alert {
             padding: 12px;
@@ -81,23 +76,51 @@
             border-radius: 6px;
             margin-bottom: 20px;
         }
+        .cart-total {
+            margin-top: 25px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .btn-action {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .btn-action:hover {
+            background: #1d4ed8;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">NexaMarket Admin</div>
+        <div class="logo">NexaMarket</div>
         <nav>
             <a href="{{ url('/') }}">Home</a>
-            <a href="{{ route('products.index') }}">Produk</a>
-            <a href="{{ route('categories.index') }}">Kategori</a>
+            <a href="{{ route('cart.index') }}">Keranjang</a>
+            <a href="{{ route('products.index') }}">Kelola Produk</a>
         </nav>
     </header>
 
     <div class="container">
-        <h1>Daftar Kategori Produk</h1>
-
-        <a href="{{ route('categories.create') }}" class="btn">+ Tambah Kategori Baru</a>
+        <h1>Keranjang Belanja Anda</h1>
 
         @if(session('success'))
             <div class="alert">
@@ -105,41 +128,63 @@
             </div>
         @endif
 
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Kategori</th>
-                    <th>Slug</th>
-                    <th>Deskripsi</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{-- Periksa apakah data kategori tersedia --}}
-                @forelse ($categories as $index => $category)
+        @if(session('cart') && count(session('cart')) > 0)
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $category->name }}</td>
-                        <td>{{ $category->slug }}</td>
-                        <td>{{ $category->description ?? '-' }}</td>
-                        <td>
-                            <a href="{{ route('categories.show', $category->id) }}" style="color: #2563eb; text-decoration: none; margin-right: 10px;">Detail</a>
-                            <a href="{{ route('categories.edit', $category->id) }}" style="color: #d97706; text-decoration: none; margin-right: 10px;">Edit</a>
-                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" onclick="return confirm('Yakin ingin menghapus kategori ini?')" style="background:none; border:none; color:#dc2626; cursor:pointer;">Hapus</button>
-                            </form>
-                        </td>
+                        <th>Foto</th>
+                        <th>Nama Produk</th>
+                        <th>Harga</th>
+                        <th>Jumlah</th>
+                        <th>Subtotal</th>
+                        <th>Aksi</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: #666;">Belum ada kategori yang ditambahkan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @php $total = 0; @endphp
+                    @foreach(session('cart') as $id => $details)
+                        @php 
+                            $subtotal = $details['price'] * $details['quantity'];
+                            $total += $subtotal;
+                        @endphp
+                        <tr>
+                            <td>
+                                @if($details['image'])
+                                    <img src="{{ asset('storage/' . $details['image']) }}" alt="{{ $details['name'] }}" class="product-img">
+                                @else
+                                    <span style="color: #888; font-size: 12px;">Tanpa Foto</span>
+                                @endif
+                            </td>
+                            <td>{{ $details['name'] }}</td>
+                            <td>Rp {{ number_format($details['price'], 0, ',', '.') }}</td>
+                            <td>{{ $details['quantity'] }}</td>
+                            <td>Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+                            <td>
+                                <form action="{{ route('cart.remove') }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="id" value="{{ $id }}">
+                                    <button type="submit" class="btn-danger" onclick="return confirm('Hapus produk dari keranjang?')">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <div class="cart-total">
+                Total Belanja: Rp {{ number_format($total, 0, ',', '.') }}
+            </div>
+
+            <div style="text-align: right;">
+                <a href="{{ url('/') }}" class="btn-action">Lanjut Belanja</a>
+            </div>
+        @else
+            <div style="text-align: center; padding: 40px; color: #666;">
+                <p>Keranjang belanja Anda masih kosong.</p>
+                <a href="{{ url('/') }}" class="btn-action" style="margin-top: 15px;">Mulai Belanja</a>
+            </div>
+        @endif
     </div>
 
 </body>
