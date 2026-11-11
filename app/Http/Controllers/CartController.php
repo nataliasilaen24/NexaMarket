@@ -24,11 +24,16 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
-        // Jika produk sudah ada di keranjang, tambahkan quantity-nya
+        if ($product->stock < 1) {
+            return redirect()->back()->with('success', 'Maaf, stok produk sedang habis.');
+        }
+
         if (isset($cart[$id])) {
+            if ($cart[$id]['quantity'] >= $product->stock) {
+                return redirect()->back()->with('success', 'Jumlah di keranjang sudah mencapai batas stok.');
+            }
             $cart[$id]['quantity']++;
         } else {
-            // Jika belum ada, tambahkan produk baru ke keranjang
             $cart[$id] = [
                 "name" => $product->name,
                 "quantity" => 1,
@@ -47,12 +52,13 @@ class CartController extends Controller
     public function remove(Request $request)
     {
         if ($request->id) {
-            $cart = session()->get('cart');
+            $cart = session()->get('cart', []);
             if (isset($cart[$request->id])) {
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
             }
-            return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
         }
+
+        return redirect()->route('cart.index')->with('success', 'Produk berhasil dihapus dari keranjang.');
     }
 }

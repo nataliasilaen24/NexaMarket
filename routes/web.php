@@ -5,8 +5,9 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 
-// Route Halaman Utama Toko (Memanggil method home di ProductController)
-Route::get('/', [ProductController::class, 'home']);
+// Katalog kategori menjadi halaman pembuka; katalog produk tersedia di /shop.
+Route::get('/', [CategoryController::class, 'index'])->name('home');
+Route::get('/shop', [ProductController::class, 'home'])->name('shop.index');
 
 // Route Resource untuk Kategori
 Route::resource('categories', CategoryController::class);

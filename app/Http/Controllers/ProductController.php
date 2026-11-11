@@ -16,15 +16,24 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
 
-        // Mengambil produk dengan relasi kategori, filter pencarian (ilike untuk PostgreSQL), dan urutan terbaru
         $products = Product::with('category')
             ->when($search, function ($query, $search) {
-                return $query->where('name', 'ilike', '%' . $search . '%');
+                return $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhereHas('category', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        });
+                });
+            })
+            ->when($request->filled('category'), function ($query) use ($request) {
+                return $query->where('category_id', $request->input('category'));
             })
             ->latest()
             ->get();
 
-        return view('home', compact('products'));
+        $categories = Category::withCount('products')->orderBy('name')->get();
+
+        return view('storefront', compact('products', 'categories'));
     }
 
     /**
