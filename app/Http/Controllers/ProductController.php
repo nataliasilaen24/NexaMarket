@@ -16,6 +16,10 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
 
+        // Mengambil semua kategori dari database.
+        $categories = Category::all();
+
+        // Mengambil produk dan menjalankan pencarian.
         $products = Product::with('category')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -29,7 +33,7 @@ class ProductController extends Controller
             ->latest()
             ->get();
 
-        return view('home', compact('products', 'search'));
+        return view('home', compact('products', 'categories', 'search'));
     }
 
     /**
@@ -92,6 +96,7 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
+        // Menyimpan gambar produk.
         $imagePath = null;
 
         if ($request->hasFile('image')) {
@@ -141,16 +146,17 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
+        // Menghapus gambar lama jika ada gambar baru.
         if ($request->hasFile('image')) {
 
-            // Hapus gambar lama jika tersedia.
-            if ($product->image &&
-                Storage::disk('public')->exists($product->image)) {
-
+            if (
+                $product->image &&
+                Storage::disk('public')->exists($product->image)
+            ) {
                 Storage::disk('public')->delete($product->image);
             }
 
-            // Simpan gambar baru.
+            // Menyimpan gambar baru.
             $validated['image'] = $request->file('image')
                 ->store('products', 'public');
         }
@@ -167,12 +173,15 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if ($product->image &&
-            Storage::disk('public')->exists($product->image)) {
-
+        // Menghapus gambar produk dari storage.
+        if (
+            $product->image &&
+            Storage::disk('public')->exists($product->image)
+        ) {
             Storage::disk('public')->delete($product->image);
         }
 
+        // Menghapus data produk dari database.
         $product->delete();
 
         return redirect()
