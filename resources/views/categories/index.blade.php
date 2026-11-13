@@ -1,74 +1,314 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Kategori - NexaMarket</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #f5f7fb; color: #222; font-family: Arial, sans-serif; }
-        header { padding: 18px max(20px, calc((100% - 1100px) / 2)); display: flex; justify-content: space-between; align-items: center; background: white; box-shadow: 0 2px 10px #ddd; }
-        .logo { color: #2563eb; font-size: 22px; font-weight: 700; text-decoration: none; }
-        nav { display: flex; gap: 20px; }
-        nav a { color: #333; font-size: 14px; text-decoration: none; }
-        nav a:hover { color: #2563eb; }
-        main { max-width: 1100px; margin: 32px auto; padding: 24px; background: white; border-radius: 8px; box-shadow: 0 2px 10px #ddd; }
-        .heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
-        h1 { margin: 0; color: #172554; font-size: 24px; }
-        .button { padding: 10px 15px; border: 0; border-radius: 5px; background: #2563eb; color: white; font-size: 14px; text-decoration: none; cursor: pointer; }
-        .button:hover { background: #1d4ed8; }
-        .alert { margin-bottom: 16px; padding: 12px; border-radius: 5px; background: #e8f7ed; color: #17613a; font-size: 14px; }
-        .alert.error { background: #fff0ef; color: #a92c20; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 13px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; font-size: 14px; }
-        th { background: #f8fafc; color: #475569; }
-        .actions { display: flex; align-items: center; gap: 10px; }
-        .actions a { color: #2563eb; font-size: 13px; text-decoration: none; }
-        .delete { padding: 0; border: 0; background: none; color: #dc2626; font-size: 13px; cursor: pointer; }
-        .empty { padding: 35px 10px; color: #64748b; text-align: center; }
-        @media (max-width: 650px) {
-            header { padding: 14px; align-items: flex-start; gap: 14px; flex-direction: column; }
-            nav { gap: 15px; }
-            main { margin: 15px 10px; padding: 16px 12px; overflow-x: auto; }
-            .heading { align-items: flex-start; flex-direction: column; }
-            table { min-width: 580px; }
+@extends('layouts.app')
+
+@section('title', 'Daftar Kategori - NexaMarket')
+
+@push('styles')
+<style>
+    .category-container {
+        max-width: 1150px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .category-card {
+        background: #fff;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .category-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .category-heading h1 {
+        margin: 0;
+        color: #172554;
+        font-size: 27px;
+        font-weight: 700;
+    }
+
+    .category-description {
+        color: #64748b;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    .add-category {
+        display: inline-block;
+        padding: 12px 18px;
+        background: #2563eb;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .add-category:hover {
+        background: #1d4ed8;
+        color: white;
+    }
+
+    .category-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .category-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+    }
+
+    .category-table th {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 16px 14px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .category-table td {
+        padding: 17px 14px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #334155;
+        font-size: 14px;
+    }
+
+    .category-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .category-name {
+        font-weight: 600;
+        color: #172554;
+    }
+
+    .category-slug {
+        display: inline-block;
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .product-count {
+        display: inline-block;
+        background: #ecfdf5;
+        color: #047857;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons a,
+    .action-buttons button {
+        border: none;
+        border-radius: 6px;
+        padding: 8px 11px;
+        font-size: 12px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .btn-detail {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .btn-edit {
+        background: #fff7ed;
+        color: #ea580c;
+    }
+
+    .btn-delete {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .btn-detail:hover { background: #dbeafe; }
+    .btn-edit:hover { background: #ffedd5; }
+    .btn-delete:hover { background: #fee2e2; }
+
+    .alert-success {
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 14px;
+    }
+
+    .alert-error {
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background: #fee2e2;
+        color: #991b1b;
+        font-size: 14px;
+    }
+
+    .empty-category {
+        text-align: center;
+        padding: 55px 20px;
+        color: #64748b;
+    }
+
+    .empty-category h3 {
+        color: #334155;
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 650px) {
+        .category-container {
+            margin: 20px auto;
+            padding: 0 12px;
         }
-    </style>
-</head>
-<body>
-    <header>
-        <a class="logo" href="{{ url('/') }}">NexaMarket</a>
-        <nav><a href="{{ url('/') }}">Home</a><a href="{{ route('products.index') }}">Produk</a><a href="{{ route('cart.index') }}">Keranjang</a></nav>
-    </header>
-    <main>
-        <div class="heading"><h1>Daftar Kategori</h1><a class="button" href="{{ route('categories.create') }}">+ Tambah Kategori</a></div>
-        @if(session('success'))<div class="alert" role="status">{{ session('success') }}</div>@endif
-        @if(session('error'))<div class="alert error" role="alert">{{ session('error') }}</div>@endif
-        @if($categories->isEmpty())
-            <div class="empty">Belum ada kategori. Tambahkan kategori agar produk dapat dikelompokkan.</div>
-        @else
-            <table>
-                <thead><tr><th>Nama Kategori</th><th>Slug</th><th>Jumlah Produk</th><th>Aksi</th></tr></thead>
-                <tbody>
-                    @foreach($categories as $category)
-                        <tr>
-                            <td>{{ $category->name }}</td>
-                            <td>{{ $category->slug }}</td>
-                            <td>{{ $category->products_count }}</td>
-                            <td><div class="actions">
-                                <a href="{{ route('categories.show', $category) }}">Detail</a>
-                                <a href="{{ route('categories.edit', $category) }}">Edit</a>
-                                <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="delete" type="submit">Hapus</button>
-                                </form>
-                            </div></td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+
+        .category-card {
+            padding: 20px 15px;
+        }
+
+        .category-heading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .category-heading h1 {
+            font-size: 23px;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
+
+<div class="category-container">
+    <div class="category-card">
+
+        <div class="category-heading">
+            <div>
+                <h1>Daftar Kategori</h1>
+                <p class="category-description">
+                    Kelola kategori produk yang tersedia di NexaMarket.
+                </p>
+            </div>
+
+            <a href="{{ route('categories.create') }}" class="add-category">
+                + Tambah Kategori
+            </a>
+        </div>
+
+        @if(session('success'))
+            <div class="alert-success" role="status">
+                {{ session('success') }}
+            </div>
         @endif
-    </main>
-</body>
-</html>
+
+        @if(session('error'))
+            <div class="alert-error" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($categories->isEmpty())
+
+            <div class="empty-category">
+                <h3>Belum Ada Kategori</h3>
+                <p>
+                    Tambahkan kategori baru agar produk dapat dikelompokkan.
+                </p>
+            </div>
+
+        @else
+
+            <div class="category-table-wrapper">
+                <table class="category-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Kategori</th>
+                            <th>Slug</th>
+                            <th>Jumlah Produk</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach($categories as $category)
+                            <tr>
+                                <td class="category-name">
+                                    {{ $category->name }}
+                                </td>
+
+                                <td>
+                                    <span class="category-slug">
+                                        {{ $category->slug }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="product-count">
+                                        {{ $category->products_count }} Produk
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="action-buttons">
+
+                                        <a
+                                            href="{{ route('categories.show', $category) }}"
+                                            class="btn-detail">
+                                            Detail
+                                        </a>
+
+                                        <a
+                                            href="{{ route('categories.edit', $category) }}"
+                                            class="btn-edit">
+                                            Edit
+                                        </a>
+
+                                        <form
+                                            action="{{ route('categories.destroy', $category) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Apakah kamu yakin ingin menghapus kategori ini?')">
+
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit" class="btn-delete">
+                                                Hapus
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+        @endif
+
+    </div>
+</div>
+
+@endsection

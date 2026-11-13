@@ -17,10 +17,15 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: #f8fafc;
             color: #333;
+            min-height: 100vh;
         }
 
         main {
@@ -28,6 +33,7 @@
         }
     </style>
 
+    <!-- CSS tambahan setiap halaman -->
     @stack('styles')
 </head>
 
@@ -36,11 +42,12 @@
     <!-- Header utama NexaMarket -->
     @include('partials.header')
 
-    <!-- Isi halaman -->
+    <!-- Konten halaman -->
     <main>
         @yield('content')
     </main>
 
+    <!-- JavaScript tambahan -->
     @stack('scripts')
 
 </body>
