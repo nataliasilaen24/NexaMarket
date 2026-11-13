@@ -224,74 +224,126 @@
     }
 
     .product-card {
-        background: white;
-        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 18px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        transition: 0.3s;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+        transition: 0.25s ease;
         text-decoration: none;
         color: inherit;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        border: 1px solid transparent;
     }
 
     .product-card:hover {
-        border-color: #2563eb;
         transform: translateY(-4px);
-        box-shadow: 0 6px 15px rgba(37,99,235,0.1);
+        box-shadow: 0 16px 28px rgba(37, 99, 235, 0.12);
+        border-color: #bfdbfe;
     }
 
     .product-img {
         width: 100%;
-        height: 180px;
+        height: 220px;
         object-fit: cover;
-        background: #e2e8f0;
+        background: #f1f5f9;
+        display: block;
     }
 
     .product-info {
-        padding: 12px;
+        padding: 14px 14px 10px;
     }
 
     .product-name {
-        font-size: 14px;
-        font-weight: 500;
-        color: #1e293b;
-        margin-bottom: 8px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 10px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        height: 38px;
+        min-height: 42px;
     }
 
     .product-price {
         color: #2563eb;
-        font-weight: bold;
-        font-size: 16px;
+        font-weight: 800;
+        font-size: 17px;
     }
 
     .product-footer {
-        padding: 0 12px 12px 12px;
+        padding: 0 14px 14px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .quantity-box {
+        display: flex;
+        align-items: center;
+        border: 1px solid #dbeafe;
+        border-radius: 10px;
+        background: #f8fbff;
+        padding: 2px 6px;
+        min-width: 70px;
+    }
+
+    .quantity-box input {
+        width: 42px;
+        border: none;
+        background: transparent;
+        color: #0f172a;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        outline: none;
+    }
+
+    .quantity-box span {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
     }
 
     .btn-detail {
+        flex: 1;
         display: block;
         text-align: center;
-        background: #f1f5f9;
-        color: #2563eb;
-        padding: 8px;
+        background: #edf6ff;
+        color: #1d4ed8;
+        padding: 11px 10px;
         text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
+        border-radius: 10px;
+        font-weight: 700;
         font-size: 13px;
         transition: 0.2s;
     }
 
     .btn-detail:hover {
+        background: #dbeafe;
+    }
+
+    .add-cart-form {
+        display: flex;
+        margin: 0;
+    }
+
+    .add-cart-btn {
+        border: none;
         background: #2563eb;
         color: white;
+        padding: 11px 12px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 12px;
+    }
+
+    .add-cart-btn:hover {
+        background: #1d4ed8;
     }
 
     .empty-state {
@@ -505,22 +557,22 @@
 
     <div class="product-grid">
         @forelse($products as $product)
-            <a href="{{ route('products.show', $product->id) }}"
-               class="product-card">
-
+            <div class="product-card">
                 <div>
-                    @if($product->image)
-                        <img
-                            src="{{ asset('storage/' . $product->image) }}"
-                            alt="{{ $product->name }}"
-                            class="product-img"
-                        >
-                    @else
-                        <div class="product-img"
-                             style="display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:13px;">
-                            Tanpa Foto
-                        </div>
-                    @endif
+                    <a href="{{ route('products.show', $product->id) }}">
+                        @if($product->image)
+                            <img
+                                src="{{ asset('storage/' . $product->image) }}"
+                                alt="{{ $product->name }}"
+                                class="product-img"
+                            >
+                        @else
+                            <div class="product-img"
+                                 style="display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:13px;">
+                                Tanpa Foto
+                            </div>
+                        @endif
+                    </a>
 
                     <div class="product-info">
                         <div class="product-name">
@@ -534,9 +586,21 @@
                 </div>
 
                 <div class="product-footer">
-                    <span class="btn-detail">Lihat Detail</span>
+                    <div class="quantity-box">
+                        <input type="number" name="quantity" form="cart-form-{{ $product->id }}" value="1" min="1" max="99">
+                        <span>Qty</span>
+                    </div>
+
+                    <a href="{{ route('products.show', $product->id) }}" class="btn-detail">Lihat Detail</a>
+
+                    <form action="{{ route('cart.add', $product->id) }}" method="POST" class="add-cart-form" id="cart-form-{{ $product->id }}">
+                        @csrf
+                        <button type="submit" class="add-cart-btn" title="Tambah ke keranjang">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </button>
+                    </form>
                 </div>
-            </a>
+            </div>
         @empty
             <div class="empty-state">
                 <p>Produk yang kamu cari tidak ditemukan atau belum tersedia.</p>

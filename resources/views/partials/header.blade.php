@@ -26,8 +26,7 @@
         <a href="{{ route('home') }}">Home</a>
         <a href="{{ route('shop') }}">Produk</a>
         <a href="{{ route('categories.index') }}">Kategori</a>
-        <a href="{{ route('home') }}#profil">Profil</a>
-        <a href="{{ route('home') }}#kontak">Kontak</a>
+        <a href="{{ route('contact') }}">Kontak</a>
 
         <!-- Keranjang -->
         <a href="{{ route('cart.index') }}"

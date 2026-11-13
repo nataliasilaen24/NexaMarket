@@ -18,6 +18,21 @@ Route::get('/', [ProductController::class, 'home'])
 
 /*
 |--------------------------------------------------------------------------
+| Halaman Profil dan Kontak
+|--------------------------------------------------------------------------
+*/
+
+// Halaman Profil NexaMarket
+Route::view('/profil', 'profile')
+    ->name('profile');
+
+// Halaman Kontak NexaMarket (disatukan dalam halaman profil)
+Route::view('/kontak', 'profile')
+    ->name('contact');
+
+
+/*
+|--------------------------------------------------------------------------
 | Katalog Produk Pelanggan
 |--------------------------------------------------------------------------
 */
