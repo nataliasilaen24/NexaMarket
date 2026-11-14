@@ -13,8 +13,31 @@ class Product extends Model
         'slug',
         'description',
         'price',
+        'is_promo',
+        'promo_price',
         'stock',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_promo' => 'boolean',
+            'promo_price' => 'decimal:2',
+        ];
+    }
+
+    public function getEffectivePriceAttribute(): string
+    {
+        if (
+            $this->is_promo
+            && $this->promo_price !== null
+            && (float) $this->promo_price < (float) $this->price
+        ) {
+            return $this->promo_price;
+        }
+
+        return (string) $this->price;
+    }
 
     public function category(): BelongsTo
     {

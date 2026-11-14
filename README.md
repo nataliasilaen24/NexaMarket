@@ -54,6 +54,19 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
+## NexaMarket accounts and promotions
+
+Visitors must create an account or sign in before accessing the store. Public registration always creates a regular customer account; administrator access is never selectable in the registration form.
+
+To create the store administrator, set `ADMIN_NAME`, `ADMIN_EMAIL`, and a non-empty `ADMIN_PASSWORD` in `.env`, then run:
+
+```sh
+php artisan migrate
+php artisan db:seed --class=AdminUserSeeder
+```
+
+All accounts sign in at `/login`; customers can register at `/register`. After signing in, use **Profil** to update account details. Administrators can manage product promos from their profile. The public **Promo** page lists only in-stock products marked for promotion with a price lower than the regular price.
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

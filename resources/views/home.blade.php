@@ -167,8 +167,7 @@
         text-decoration: underline;
     }
 
-    /* Kategori */
-    .category-section {
+    .promo-products-section {
         background: white;
         border-radius: 10px;
         padding: 20px;
@@ -176,43 +175,45 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
-    .category-grid {
+    .promo-teaser-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 12px;
     }
 
-    .category-card {
+    .promo-teaser-card {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
         background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 15px 10px;
-        text-align: center;
+        color: #1e3a8a;
         text-decoration: none;
-        color: #334155;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s;
-        height: 110px;
     }
 
-    .category-card:hover {
+    .promo-teaser-card:hover {
         border-color: #2563eb;
-        background: #eff6ff;
-        color: #2563eb;
         transform: translateY(-2px);
     }
 
-    .category-icon {
-        font-size: 22px;
-        margin-bottom: 8px;
+    .promo-teaser-card img {
+        width: 100%;
+        height: 150px;
+        border-radius: 8px;
+        background: white;
+        object-fit: cover;
     }
 
-    .category-name {
-        font-size: 12px;
-        font-weight: 500;
+    .promo-teaser-price {
+        color: #2563eb;
+        font-weight: 800;
+    }
+
+    .promo-teaser-card del,
+    .product-original-price {
+        color: #94a3b8;
+        font-size: 13px;
     }
 
     /* Produk */
@@ -491,7 +492,7 @@
 
     <!-- Shortcut Menu -->
     <div class="shortcut-menu">
-        <a href="{{ route('shop') }}" class="shortcut-item">
+        <a href="{{ route('promotions.index') }}" class="shortcut-item">
             <div class="shortcut-icon">⚡</div>
             Flash Sale
         </a>
@@ -511,7 +512,7 @@
             Pulsa & Tagihan
         </a>
 
-        <a href="{{ route('shop') }}" class="shortcut-item">
+        <a href="{{ route('promotions.index') }}" class="shortcut-item">
             <div class="shortcut-icon">🏷️</div>
             Semua Promo
         </a>
@@ -522,30 +523,31 @@
         </a>
     </div>
 
-    <!-- Kategori -->
-    <div class="category-section">
+    <!-- Promo -->
+    <div class="promo-products-section">
         <div class="section-header">
-            <div class="section-title">Belanja Sesuai Duniamu</div>
+            <div class="section-title">Promo Pilihan</div>
 
-            <a href="{{ route('categories.index') }}" class="see-all">
-                Lihat Semua &gt;
+            <a href="{{ route('promotions.index') }}" class="see-all">
+                Lihat Semua Promo &gt;
             </a>
         </div>
 
-        <div class="category-grid">
-            @forelse($categories as $cat)
-                <a href="{{ url('/?search=' . urlencode($cat->name)) }}"
-                   class="category-card">
-
-                    <div class="category-icon">📦</div>
-
-                    <div class="category-name">
-                        {{ $cat->name }}
-                    </div>
+        <div class="promo-teaser-grid">
+            @forelse($promoProducts as $promoProduct)
+                <a class="promo-teaser-card" href="{{ route('products.show', $promoProduct) }}">
+                    @if($promoProduct->image)
+                        <img src="{{ asset('storage/' . $promoProduct->image) }}" alt="{{ $promoProduct->name }}">
+                    @else
+                        <div class="product-img" style="display:grid;place-items:center;color:#94a3b8">Tanpa Foto</div>
+                    @endif
+                    <strong>{{ $promoProduct->name }}</strong>
+                    <span class="promo-teaser-price">Rp {{ number_format($promoProduct->effective_price, 0, ',', '.') }}</span>
+                    <del>Rp {{ number_format($promoProduct->price, 0, ',', '.') }}</del>
                 </a>
             @empty
                 <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #64748b; font-size: 14px;">
-                    Belum ada kategori yang tersedia.
+                    Belum ada produk promo.
                 </div>
             @endforelse
         </div>
@@ -594,9 +596,15 @@
                             {{ $product->name }}
                         </div>
 
+                        @if($product->is_promo && (float) $product->promo_price < (float) $product->price)
+                            <span class="promo-teaser-price">PROMO</span>
+                        @endif
                         <div class="product-price">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                            Rp {{ number_format($product->effective_price, 0, ',', '.') }}
                         </div>
+                        @if($product->is_promo && (float) $product->promo_price < (float) $product->price)
+                            <del class="product-original-price">Rp {{ number_format($product->price, 0, ',', '.') }}</del>
+                        @endif
                     </div>
                 </div>
 
@@ -631,10 +639,10 @@
     <div class="promo-banner-bottom">
         <div>
             <h2>Harga turun. Standar tetap tinggi.</h2>
-            <p>Nikmati diskon hingga 40% untuk produk pilihan di musim belanja tahun ini.</p>
+            <p>Lihat harga spesial untuk produk-produk yang sedang promo.</p>
         </div>
 
-        <a href="{{ route('shop') }}" class="btn-hero">
+        <a href="{{ route('promotions.index') }}" class="btn-hero">
             Jelajahi Promo
         </a>
     </div>

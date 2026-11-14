@@ -4,12 +4,12 @@
     @endphp
 
     <!-- Logo -->
-    <a href="{{ route('home') }}" class="brand">
+    <a href="{{ auth()->check() ? route('home') : route('login') }}" class="brand">
         Nexa<span>Market</span>
     </a>
 
     <!-- Pencarian hanya di Home -->
-    @if (request()->routeIs('home'))
+    @if (auth()->check() && request()->routeIs('home'))
         <form action="{{ route('home') }}" method="GET" class="search-form">
             <input
                 type="text"
@@ -26,21 +26,30 @@
 
     <!-- Navigasi -->
     <nav class="main-nav">
-        <a href="{{ route('home') }}">Home</a>
-        <a href="{{ route('shop') }}">Produk</a>
-        <a href="{{ route('categories.index') }}">Kategori</a>
-        <a href="{{ route('contact') }}">Kontak</a>
-
-        <!-- Keranjang -->
-        <a href="{{ route('cart.index') }}"
-           class="cart-link"
-           aria-label="Keranjang"
-           title="Keranjang">
-            <i class="fa-solid fa-cart-shopping"></i>
-            @if($cartCount > 0)
-                <span class="cart-count">{{ $cartCount }}</span>
+        @auth
+            <a href="{{ route('home') }}">Home</a>
+            <a href="{{ route('shop') }}">Produk</a>
+            <a href="{{ route('promotions.index') }}">Promo</a>
+            <a href="{{ route('contact') }}">Kontak</a>
+            <a href="{{ route('orders.index') }}">Pesanan</a>
+            <a href="{{ route('profile') }}">Profil</a>
+            @if(auth()->user()->is_admin)
+                <a href="{{ route('admin.products.index') }}">Kelola Promo</a>
             @endif
-        </a>
+
+            <a href="{{ route('cart.index') }}"
+               class="cart-link"
+               aria-label="Keranjang"
+               title="Keranjang">
+                <i class="fa-solid fa-cart-shopping"></i>
+                @if($cartCount > 0)
+                    <span class="cart-count">{{ $cartCount }}</span>
+                @endif
+            </a>
+        @else
+            <a href="{{ route('login') }}">Masuk</a>
+            <a href="{{ route('register') }}">Buat Akun</a>
+        @endauth
     </nav>
 
 </header>

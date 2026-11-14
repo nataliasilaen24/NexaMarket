@@ -405,6 +405,7 @@
                                     value="{{ $id }}"
                                     form="checkout-form"
                                     data-price="{{ $item['price'] }}"
+                                    data-original-price="{{ $products->get($id)?->price ?? $item['price'] }}"
                                     data-quantity="{{ $item['quantity'] }}"
                                     aria-label="Pilih {{ $item['name'] }} untuk checkout"
                                     {{ in_array((string) $id, $selectedItems, true) ? 'checked' : '' }}
@@ -422,7 +423,15 @@
                             <div class="item-info">
                                 <h2>{{ $item['name'] }}</h2>
                                 <div class="item-meta">
-                                    <span>Harga satuan: Rp {{ number_format($item['price'], 0, ',', '.') }}</span>
+                                    @if(
+                                        $products->get($id)?->is_promo
+                                        && (float) $products->get($id)?->promo_price < (float) $products->get($id)?->price
+                                    )
+                                        <span>Harga promo: Rp {{ number_format($item['price'], 0, ',', '.') }}</span>
+                                        <span>Harga normal: Rp {{ number_format($products->get($id)->price, 0, ',', '.') }}</span>
+                                    @else
+                                        <span>Harga satuan: Rp {{ number_format($item['price'], 0, ',', '.') }}</span>
+                                    @endif
                                 </div>
                                 @php
                                     $stock = $products->get($id)?->stock ?? $item['quantity'];
@@ -471,7 +480,7 @@
 
                     <div class="summary-row">
                         <span>Diskon</span>
-                        <strong>Rp 0</strong>
+                        <strong id="selected-discount">Rp 0</strong>
                     </div>
 
                     <div class="summary-total">
@@ -491,21 +500,37 @@
 
 @push('scripts')
 <script>
+    const selectedCount = document.getElementById('selected-count');
+    const selectedSubtotal = document.getElementById('selected-subtotal');
+    const selectedDiscount = document.getElementById('selected-discount');
+    const selectedTotal = document.getElementById('selected-total');
+    const checkoutButton = document.getElementById('checkout-button');
+
     function updateCheckoutSummary() {
+        if (!selectedCount || !selectedSubtotal || !selectedDiscount || !selectedTotal || !checkoutButton) {
+            return;
+        }
+
         const selectedItems = document.querySelectorAll('.cart-item-checkbox:checked');
         let quantity = 0;
         let subtotal = 0;
+        let discount = 0;
 
         selectedItems.forEach((item) => {
-            quantity += Number(item.dataset.quantity);
-            subtotal += Number(item.dataset.price) * Number(item.dataset.quantity);
+            const itemQuantity = Number(item.dataset.quantity);
+            const itemPrice = Number(item.dataset.price);
+            const originalPrice = Number(item.dataset.originalPrice);
+            quantity += itemQuantity;
+            subtotal += itemPrice * itemQuantity;
+            discount += Math.max(0, originalPrice - itemPrice) * itemQuantity;
         });
 
         const formattedSubtotal = 'Rp ' + subtotal.toLocaleString('id-ID');
-        document.getElementById('selected-count').textContent = quantity + ' barang';
-        document.getElementById('selected-subtotal').textContent = formattedSubtotal;
-        document.getElementById('selected-total').textContent = formattedSubtotal;
-        document.getElementById('checkout-button').disabled = selectedItems.length === 0;
+        selectedCount.textContent = quantity + ' barang';
+        selectedSubtotal.textContent = formattedSubtotal;
+        selectedDiscount.textContent = 'Rp ' + discount.toLocaleString('id-ID');
+        selectedTotal.textContent = formattedSubtotal;
+        checkoutButton.disabled = selectedItems.length === 0;
     }
 
     document.querySelectorAll('.cart-item-checkbox').forEach((checkbox) => {

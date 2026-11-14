@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Produk - NexaMarket')
+@section('title', ($pageTitle ?? 'Belanja Produk') . ' - NexaMarket')
 
 @push('styles')
 <style>
@@ -104,6 +104,29 @@
         font-weight: 800;
     }
 
+    .shop-price-row {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .shop-original-price {
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+    .shop-promo-badge {
+        display: inline-flex;
+        margin-bottom: 5px;
+        border-radius: 999px;
+        padding: 4px 8px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
     .shop-product-stock {
         margin-top: 6px;
         color: #64748b;
@@ -189,11 +212,11 @@
 <section class="shop-page">
     <div class="shop-heading">
         <div>
-            <h1>Belanja Produk</h1>
-            <p>Pilih produk dan jumlah yang ingin dimasukkan ke keranjang.</p>
+            <h1>{{ $pageTitle ?? 'Belanja Produk' }}</h1>
+            <p>{{ $pageDescription ?? 'Pilih produk dan jumlah yang ingin dimasukkan ke keranjang.' }}</p>
         </div>
 
-        <form class="shop-search" action="{{ route('shop') }}" method="GET">
+        <form class="shop-search" action="{{ route($listingRoute ?? 'shop') }}" method="GET">
             @if($category)
                 <input type="hidden" name="category" value="{{ $category }}">
             @endif
@@ -218,7 +241,15 @@
                     <h2 class="shop-product-name">
                         <a href="{{ route('products.show', $product) }}">{{ $product->name }}</a>
                     </h2>
-                    <div class="shop-product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                    @if($product->is_promo && (float) $product->promo_price < (float) $product->price)
+                        <span class="shop-promo-badge">PROMO</span>
+                    @endif
+                    <div class="shop-price-row">
+                        <span class="shop-product-price">Rp {{ number_format($product->effective_price, 0, ',', '.') }}</span>
+                        @if($product->is_promo && (float) $product->promo_price < (float) $product->price)
+                            <del class="shop-original-price">Rp {{ number_format($product->price, 0, ',', '.') }}</del>
+                        @endif
+                    </div>
                     <div class="shop-product-stock">
                         {{ $product->stock > 0 ? 'Stok: ' . $product->stock : 'Stok habis' }}
                     </div>

@@ -27,10 +27,10 @@
     .checkout-error {
         margin-bottom: 16px;
         padding: 13px 16px;
-        border: 1px solid #fecaca;
+        border: 1px solid #bfdbfe;
         border-radius: 12px;
-        background: #fef2f2;
-        color: #b91c1c;
+        background: #eff6ff;
+        color: #1e40af;
     }
 
     .checkout-section {
@@ -52,6 +52,13 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 14px;
+    }
+
+    .address-save-note {
+        margin-top: 12px;
+        color: #1d4ed8;
+        font-size: .86rem;
+        line-height: 1.5;
     }
 
     .checkout-field {
@@ -84,7 +91,7 @@
 
     .checkout-product {
         display: grid;
-        grid-template-columns: 76px minmax(0, 1fr) auto;
+        grid-template-columns: 76px minmax(0, 1fr) auto auto;
         gap: 14px;
         align-items: center;
         padding: 14px 0;
@@ -112,8 +119,26 @@
         font-size: .9rem;
     }
 
+    .checkout-quantity {
+        display: grid;
+        gap: 5px;
+        color: #64748b;
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    .checkout-quantity input {
+        width: 82px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 8px;
+        color: #1e293b;
+        font: inherit;
+        font-size: .9rem;
+    }
+
     .checkout-product-total {
-        color: #ee4d2d;
+        color: #2563eb;
         font-weight: 700;
         white-space: nowrap;
     }
@@ -134,14 +159,14 @@
     }
 
     .checkout-option:has(input:checked) {
-        border-color: #ee4d2d;
-        background: #fff8f6;
+        border-color: #2563eb;
+        background: #eff6ff;
     }
 
     .checkout-option input {
         width: 18px;
         height: 18px;
-        accent-color: #ee4d2d;
+        accent-color: #2563eb;
     }
 
     .checkout-option-copy {
@@ -162,15 +187,32 @@
         white-space: nowrap;
     }
 
-    .payment-demo-note {
-        margin: -4px 0 14px;
-        color: #b45309;
-        font-size: .88rem;
+    .bank-selector {
+        margin: 0 0 8px 30px;
+    }
+
+    .payment-details {
+        margin: 0 0 8px 30px;
+        padding: 14px 16px;
+        border: 1px solid #bfdbfe;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #1e40af;
         line-height: 1.5;
     }
 
-    .bank-selector {
-        margin: 0 0 8px 30px;
+    .payment-details strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .payment-details p {
+        margin: 0;
+        font-size: .9rem;
+    }
+
+    .payment-details p + p {
+        margin-top: 5px;
     }
 
     .bank-selector label {
@@ -214,7 +256,7 @@
     }
 
     .checkout-total strong {
-        color: #ee4d2d;
+        color: #2563eb;
     }
 
     .checkout-submit-bar {
@@ -247,7 +289,7 @@
     .checkout-footer-total strong {
         display: block;
         margin-top: 3px;
-        color: #ee4d2d;
+        color: #2563eb;
         font-size: 1.15rem;
     }
 
@@ -256,7 +298,7 @@
         border: 0;
         border-radius: 9px;
         padding: 14px 20px;
-        background: #ee4d2d;
+        background: #2563eb;
         color: white;
         font: inherit;
         font-weight: 800;
@@ -264,14 +306,122 @@
     }
 
     .checkout-submit:hover {
-        background: #d94325;
+        background: #1d4ed8;
     }
 
-    .checkout-back {
-        display: inline-block;
-        margin: 4px 0 20px;
+    .order-confirmation-dialog {
+        width: min(560px, calc(100vw - 24px));
+        max-height: min(82vh, 720px);
+        margin: auto;
+        overflow: auto;
+        border: 0;
+        border-radius: 16px;
+        padding: 24px;
+        color: #334155;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, .24);
+    }
+
+    .order-confirmation-dialog::backdrop {
+        background: rgba(15, 23, 42, .56);
+        backdrop-filter: blur(3px);
+    }
+
+    .order-confirmation-dialog h2 {
+        margin-bottom: 6px;
+        color: #172554;
+        font-size: 1.3rem;
+    }
+
+    .order-confirmation-dialog > p {
+        margin-bottom: 18px;
         color: #64748b;
-        text-decoration: none;
+        line-height: 1.5;
+    }
+
+    .order-review-section {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .order-review-section h3 {
+        margin-bottom: 10px;
+        color: #475569;
+        font-size: .88rem;
+    }
+
+    .order-review-items,
+    .order-review-details {
+        display: grid;
+        gap: 9px;
+    }
+
+    .order-review-row,
+    .order-review-detail {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        color: #64748b;
+        font-size: .9rem;
+        line-height: 1.45;
+    }
+
+    .order-review-row strong,
+    .order-review-detail strong {
+        color: #334155;
+        text-align: right;
+    }
+
+    .order-review-address {
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+    }
+
+    .order-review-total {
+        margin-top: 12px;
+        padding-top: 13px;
+        border-top: 1px solid #e2e8f0;
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+    .order-review-total strong {
+        color: #2563eb;
+        font-size: 1.1rem;
+    }
+
+    .order-confirmation-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .order-confirmation-actions button {
+        min-height: 44px;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 10px 15px;
+        background: white;
+        color: #334155;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .order-confirmation-actions button.primary {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: white;
+    }
+
+    .order-confirmation-actions button.primary:hover {
+        background: #1d4ed8;
+    }
+
+    .order-confirmation-actions button:disabled {
+        cursor: wait;
+        opacity: .7;
     }
 
     @media (max-width: 560px) {
@@ -306,6 +456,10 @@
             grid-column: 2;
         }
 
+        .checkout-quantity {
+            grid-column: 2;
+        }
+
         .checkout-submit-inner {
             gap: 12px;
         }
@@ -317,6 +471,14 @@
 
         .checkout-footer-total {
             font-size: .9rem;
+        }
+
+        .order-confirmation-dialog {
+            padding: 19px;
+        }
+
+        .order-confirmation-actions {
+            flex-direction: column-reverse;
         }
     }
 </style>
@@ -345,21 +507,22 @@
             <div class="address-fields">
                 <label class="checkout-field">
                     Nama penerima
-                    <input type="text" name="recipient_name" value="{{ old('recipient_name') }}" maxlength="100" autocomplete="name" required>
+                    <input id="recipient-name" type="text" name="recipient_name" value="{{ old('recipient_name', $shippingAddress['recipient_name'] ?? '') }}" maxlength="100" autocomplete="name" required>
                 </label>
                 <label class="checkout-field">
                     Nomor telepon
-                    <input type="tel" name="phone" value="{{ old('phone') }}" maxlength="30" autocomplete="tel" required>
+                    <input id="recipient-phone" type="tel" name="phone" value="{{ old('phone', $shippingAddress['phone'] ?? '') }}" maxlength="30" autocomplete="tel" required>
                 </label>
                 <label class="checkout-field full">
                     Alamat lengkap
-                    <textarea name="address" maxlength="1000" autocomplete="street-address" required>{{ old('address') }}</textarea>
+                    <textarea id="recipient-address" name="address" maxlength="1000" autocomplete="street-address" required>{{ old('address', $shippingAddress['address'] ?? '') }}</textarea>
                 </label>
             </div>
+            <p class="address-save-note">Alamat ini akan tersimpan untuk checkout berikutnya. Anda bisa mengubahnya kapan saja.</p>
         </section>
 
         <section class="checkout-section">
-            <h2>Produk yang Dipilih ({{ $items->sum('quantity') }} barang)</h2>
+            <h2>Produk yang Dipilih (<span id="checkout-item-count">{{ $items->sum('quantity') }}</span> barang)</h2>
             @foreach($items as $item)
                 <article class="checkout-product">
                     @if($item['image'])
@@ -369,9 +532,22 @@
                     @endif
                     <div>
                         <h3>{{ $item['name'] }}</h3>
-                        <p>{{ $item['quantity'] }} × Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+                        <p>Rp {{ number_format($item['price'], 0, ',', '.') }} / barang</p>
                     </div>
-                    <div class="checkout-product-total">
+                    <label class="checkout-quantity">
+                        Jumlah
+                        <input
+                            type="number"
+                            name="quantities[{{ $item['id'] }}]"
+                            value="{{ old('quantities.' . $item['id'], $item['quantity']) }}"
+                            min="1"
+                            max="{{ $item['stock'] }}"
+                            data-quantity-input
+                            data-unit-price="{{ $item['price'] }}"
+                            required
+                        >
+                    </label>
+                    <div class="checkout-product-total" data-line-total>
                         Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
                     </div>
                 </article>
@@ -405,15 +581,12 @@
 
         <section class="checkout-section">
             <h2>Metode Pembayaran</h2>
-            <p class="payment-demo-note">
-                Mode demo: pilihan bank, QRIS, dan kartu kredit belum memproses uang. Jangan masukkan data kartu.
-            </p>
             <div class="option-list">
                 <label class="checkout-option">
                     <input type="radio" name="payment_method" value="bank_transfer" {{ old('payment_method', 'cod') === 'bank_transfer' ? 'checked' : '' }} required>
                     <span class="checkout-option-copy">
                         <strong>Transfer Bank</strong>
-                        <small>Pilih bank tujuan (simulasi).</small>
+                        <small>Pilih bank tujuan untuk melihat instruksi pembayaran.</small>
                     </span>
                 </label>
                 <div class="bank-selector" id="bank-selector" hidden>
@@ -430,16 +603,36 @@
                     <input type="radio" name="payment_method" value="qris" {{ old('payment_method', 'cod') === 'qris' ? 'checked' : '' }} required>
                     <span class="checkout-option-copy">
                         <strong>QRIS</strong>
-                        <small>Simulasi saja; QR pembayaran belum dibuat.</small>
+                        <small>Bayar menggunakan aplikasi mobile banking atau dompet digital.</small>
                     </span>
                 </label>
+                <div class="payment-details" id="qris-details" role="status" hidden>
+                    <strong>Pembayaran QRIS</strong>
+                    @if(filled(config('services.midtrans.server_key')))
+                        <p>Setelah menekan “Buat Pesanan”, Anda akan diarahkan ke halaman pembayaran Midtrans untuk menampilkan QRIS sesuai total pesanan. Pindai QR tersebut dan ikuti status pembayaran di halaman Midtrans.</p>
+                    @else
+                        <p>QRIS belum diaktifkan. Pesanan tetap akan dicatat, tetapi pembayaran belum diproses sampai pengelola mengaktifkan Midtrans.</p>
+                    @endif
+                </div>
                 <label class="checkout-option">
                     <input type="radio" name="payment_method" value="credit_card" {{ old('payment_method', 'cod') === 'credit_card' ? 'checked' : '' }} required>
                     <span class="checkout-option-copy">
                         <strong>Kartu Kredit</strong>
-                        <small>Simulasi saja; pembayaran kartu belum diproses.</small>
+                        <small>Pembayaran kartu dilakukan di halaman aman Midtrans.</small>
                     </span>
                 </label>
+                <div class="payment-details" id="credit-card-details" role="status" hidden>
+                    <strong>Langkah pembayaran dengan kartu kredit</strong>
+                    @if(filled(config('services.midtrans.server_key')))
+                        <p>1. Tekan “Buat Pesanan” untuk membuka halaman pembayaran aman Midtrans.</p>
+                        <p>2. Masukkan data kartu hanya pada halaman Midtrans, lalu pilih cicilan jika pilihan tersebut tersedia.</p>
+                        <p>3. Periksa tenor dan jumlah tagihan, kemudian setujui pembayaran.</p>
+                        <p>4. Selesaikan verifikasi bank (misalnya OTP/3-D Secure) dan tunggu konfirmasi.</p>
+                        <p>Tenor cicilan bergantung pada bank penerbit, kartu, dan pengaturan akun Midtrans.</p>
+                    @else
+                        <p>Pembayaran kartu belum diaktifkan. Pesanan tetap akan dicatat, tetapi pembayaran belum diproses sampai pengelola mengaktifkan Midtrans.</p>
+                    @endif
+                </div>
                 <label class="checkout-option">
                     <input type="radio" name="payment_method" value="cod" {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }} required>
                     <span class="checkout-option-copy">
@@ -466,8 +659,6 @@
             </div>
         </section>
 
-        <a class="checkout-back" href="{{ route('cart.index') }}">← Kembali ke keranjang</a>
-
         <div class="checkout-submit-bar">
             <div class="checkout-submit-inner">
                 <div class="checkout-footer-total">
@@ -478,6 +669,52 @@
             </div>
         </div>
     </form>
+
+    <dialog class="order-confirmation-dialog" id="order-confirmation-dialog" aria-labelledby="order-confirmation-title">
+        <h2 id="order-confirmation-title">Periksa pesanan Anda</h2>
+        <p>Pastikan jumlah barang, alamat, dan pembayaran sudah benar sebelum pesanan dibuat.</p>
+
+        <section class="order-review-section">
+            <h3>Produk yang dipilih</h3>
+            <div class="order-review-items" id="order-review-items"></div>
+        </section>
+
+        <section class="order-review-section">
+            <h3>Pengiriman dan pembayaran</h3>
+            <div class="order-review-details">
+                <div class="order-review-detail">
+                    <span>Penerima</span>
+                    <strong id="order-review-recipient"></strong>
+                </div>
+                <div class="order-review-detail">
+                    <span>Telepon</span>
+                    <strong id="order-review-phone"></strong>
+                </div>
+                <div class="order-review-detail">
+                    <span>Alamat</span>
+                    <strong class="order-review-address" id="order-review-address"></strong>
+                </div>
+                <div class="order-review-detail">
+                    <span>Pengiriman</span>
+                    <strong id="order-review-shipping"></strong>
+                </div>
+                <div class="order-review-detail">
+                    <span>Metode pembayaran</span>
+                    <strong id="order-review-payment"></strong>
+                </div>
+            </div>
+        </section>
+
+        <div class="order-review-detail order-review-total">
+            <span>Total pembayaran</span>
+            <strong id="order-review-total"></strong>
+        </div>
+
+        <div class="order-confirmation-actions">
+            <button type="button" id="cancel-place-order">Periksa Kembali</button>
+            <button type="button" class="primary" id="confirm-place-order">Konfirmasi &amp; Buat Pesanan</button>
+        </div>
+    </dialog>
 </main>
 @endsection
 
@@ -490,14 +727,34 @@
     const shippingCostElement = document.getElementById('shipping-cost');
     const bankSelector = document.getElementById('bank-selector');
     const paymentChannel = document.getElementById('payment-channel');
-    const subtotal = Number(totalElement.dataset.subtotal);
+    const qrisDetails = document.getElementById('qris-details');
+    const creditCardDetails = document.getElementById('credit-card-details');
+    const quantityInputs = document.querySelectorAll('[data-quantity-input]');
+    const itemCountElement = document.getElementById('checkout-item-count');
+    const placeOrderForm = document.getElementById('place-order-form');
+    const orderConfirmationDialog = document.getElementById('order-confirmation-dialog');
+    const orderReviewItems = document.getElementById('order-review-items');
+    const confirmPlaceOrderButton = document.getElementById('confirm-place-order');
 
     function updateCheckoutTotal() {
         const selectedShipping = document.querySelector('input[name="shipping_method"]:checked');
         const shippingCost = selectedShipping ? Number(selectedShipping.dataset.cost) : 0;
+        const subtotal = Array.from(quantityInputs).reduce((sum, input) => {
+            const quantity = Number(input.value) || 0;
+            const lineTotal = Number(input.dataset.unitPrice) * quantity;
+            input.closest('.checkout-product').querySelector('[data-line-total]').textContent =
+                'Rp ' + lineTotal.toLocaleString('id-ID');
+
+            return sum + lineTotal;
+        }, 0);
+        const itemCount = Array.from(quantityInputs).reduce(
+            (sum, input) => sum + (Number(input.value) || 0),
+            0
+        );
         const total = subtotal + shippingCost;
         const formattedTotal = 'Rp ' + total.toLocaleString('id-ID');
 
+        itemCountElement.textContent = itemCount.toLocaleString('id-ID');
         totalElement.textContent = formattedTotal;
         footerTotal.textContent = formattedTotal;
         shippingCostElement.textContent = shippingCost === 0
@@ -512,9 +769,78 @@
         bankSelector.hidden = !isBankTransfer;
         paymentChannel.disabled = !isBankTransfer;
         paymentChannel.required = isBankTransfer;
+        qrisDetails.hidden = selectedPayment?.value !== 'qris';
+        creditCardDetails.hidden = selectedPayment?.value !== 'credit_card';
     }
 
+    function updateOrderReview() {
+        orderReviewItems.replaceChildren();
+        document.querySelectorAll('.checkout-product').forEach((product) => {
+            const name = product.querySelector('h3').textContent.trim();
+            const quantity = product.querySelector('[data-quantity-input]').value;
+            const lineTotal = product.querySelector('[data-line-total]').textContent.trim();
+            const row = document.createElement('div');
+            const description = document.createElement('span');
+            const amount = document.createElement('strong');
+
+            row.className = 'order-review-row';
+            description.textContent = name + ' × ' + quantity;
+            amount.textContent = lineTotal;
+            row.append(description, amount);
+            orderReviewItems.append(row);
+        });
+
+        const selectedShipping = document.querySelector('input[name="shipping_method"]:checked');
+        const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
+        const paymentLabel = selectedPayment.closest('.checkout-option').querySelector('strong').textContent.trim();
+        const shippingLabel = selectedShipping.closest('.checkout-option').querySelector('strong').textContent.trim();
+
+        if (selectedPayment.value === 'bank_transfer') {
+            document.getElementById('order-review-payment').textContent =
+                paymentLabel + ' - ' + paymentChannel.selectedOptions[0].textContent.trim();
+        } else {
+            document.getElementById('order-review-payment').textContent = paymentLabel;
+        }
+
+        document.getElementById('order-review-recipient').textContent =
+            document.getElementById('recipient-name').value.trim();
+        document.getElementById('order-review-phone').textContent =
+            document.getElementById('recipient-phone').value.trim();
+        document.getElementById('order-review-address').textContent =
+            document.getElementById('recipient-address').value.trim();
+        document.getElementById('order-review-shipping').textContent = shippingLabel;
+        document.getElementById('order-review-total').textContent = totalElement.textContent;
+    }
+
+    placeOrderForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        updateOrderReview();
+        orderConfirmationDialog.showModal();
+    });
+
+    document.getElementById('cancel-place-order').addEventListener('click', () => {
+        orderConfirmationDialog.close();
+    });
+
+    confirmPlaceOrderButton.addEventListener('click', () => {
+        if (!placeOrderForm.reportValidity()) {
+            orderConfirmationDialog.close();
+            return;
+        }
+
+        confirmPlaceOrderButton.disabled = true;
+        confirmPlaceOrderButton.textContent = 'Memproses Pesanan...';
+        placeOrderForm.submit();
+    });
+
+    orderConfirmationDialog.addEventListener('click', (event) => {
+        if (event.target === orderConfirmationDialog) {
+            orderConfirmationDialog.close();
+        }
+    });
+
     shippingInputs.forEach((input) => input.addEventListener('change', updateCheckoutTotal));
+    quantityInputs.forEach((input) => input.addEventListener('input', updateCheckoutTotal));
     paymentInputs.forEach((input) => input.addEventListener('change', updateBankSelector));
     updateCheckoutTotal();
     updateBankSelector();

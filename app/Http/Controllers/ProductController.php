@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,24 +16,29 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
 
-        // Mengambil semua kategori dari database.
-        $categories = Category::all();
-
         // Mengambil produk dan menjalankan pencarian.
         $products = Product::with('category')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'ilike', '%' . $search . '%')
-                      ->orWhere('description', 'ilike', '%' . $search . '%')
-                      ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                          $categoryQuery->where('name', 'ilike', '%' . $search . '%');
-                      });
+                    $q->where('name', 'ilike', '%'.$search.'%')
+                        ->orWhere('description', 'ilike', '%'.$search.'%')
+                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                            $categoryQuery->where('name', 'ilike', '%'.$search.'%');
+                        });
                 });
             })
             ->latest()
             ->get();
 
-        return view('home', compact('products', 'categories', 'search'));
+        $promoProducts = Product::with('category')
+            ->where('is_promo', true)
+            ->whereColumn('promo_price', '<', 'price')
+            ->where('stock', '>', 0)
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return view('home', compact('products', 'promoProducts', 'search'));
     }
 
     /**
@@ -47,11 +52,11 @@ class ProductController extends Controller
         $products = Product::with('category')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'ilike', '%' . $search . '%')
-                      ->orWhere('description', 'ilike', '%' . $search . '%')
-                      ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                          $categoryQuery->where('name', 'ilike', '%' . $search . '%');
-                      });
+                    $q->where('name', 'ilike', '%'.$search.'%')
+                        ->orWhere('description', 'ilike', '%'.$search.'%')
+                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                            $categoryQuery->where('name', 'ilike', '%'.$search.'%');
+                        });
                 });
             })
             ->when($category, function ($query, $category) {
@@ -63,7 +68,43 @@ class ProductController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('products.index', compact('products', 'search', 'category'));
+        $pageTitle = 'Belanja Produk';
+        $pageDescription = 'Pilih produk dan jumlah yang ingin dimasukkan ke keranjang.';
+        $listingRoute = 'shop';
+
+        return view(
+            'products.index',
+            compact('products', 'search', 'category', 'pageTitle', 'pageDescription', 'listingRoute')
+        );
+    }
+
+    public function promotions(Request $request)
+    {
+        $search = $request->input('search');
+        $products = Product::with('category')
+            ->where('is_promo', true)
+            ->whereColumn('promo_price', '<', 'price')
+            ->where('stock', '>', 0)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($productQuery) use ($search) {
+                    $productQuery
+                        ->where('name', 'ilike', '%'.$search.'%')
+                        ->orWhere('description', 'ilike', '%'.$search.'%');
+                });
+            })
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
+
+        $category = null;
+        $pageTitle = 'Produk Promo';
+        $pageDescription = 'Temukan produk pilihan dengan harga promo.';
+        $listingRoute = 'promotions.index';
+
+        return view(
+            'products.index',
+            compact('products', 'search', 'category', 'pageTitle', 'pageDescription', 'listingRoute')
+        );
     }
 
     /**

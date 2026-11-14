@@ -275,7 +275,13 @@
 
                 <div class="price-box">
                     <div class="price-label">Harga</div>
-                    <div class="price-value">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                    @if($product->is_promo && (float) $product->promo_price < (float) $product->price)
+                        <span class="product-badge">Promo</span>
+                        <div class="price-value">Rp {{ number_format($product->effective_price, 0, ',', '.') }}</div>
+                        <del>Rp {{ number_format($product->price, 0, ',', '.') }}</del>
+                    @else
+                        <div class="price-value">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                    @endif
                 </div>
 
                 <div class="meta-list">

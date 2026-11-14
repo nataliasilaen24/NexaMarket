@@ -16,6 +16,14 @@ class CartController extends Controller
         $selectedItems = array_map('strval', session()->get('checkout_items', []));
         $products = Product::whereIn('id', array_keys($cart))->get()->keyBy('id');
 
+        foreach ($cart as $id => $item) {
+            if ($products->has($id)) {
+                $cart[$id]['price'] = $products->get($id)->effective_price;
+            }
+        }
+
+        session()->put('cart', $cart);
+
         return view('cart.index', compact('cart', 'products', 'selectedItems'));
     }
 
@@ -42,14 +50,16 @@ class CartController extends Controller
             $cart[$product->id]['quantity'] = $currentQuantity + $quantity;
         } else {
             $cart[$product->id] = [
-                "name" => $product->name,
-                "quantity" => $quantity,
-                "price" => $product->price,
-                "image" => $product->image
+                'name' => $product->name,
+                'quantity' => $quantity,
+                'price' => $product->effective_price,
+                'image' => $product->image,
             ];
         }
+        $cart[$product->id]['price'] = $product->effective_price;
 
         session()->put('cart', $cart);
+
         return redirect()
             ->route('cart.index')
             ->with('success', 'Produk berhasil ditambahkan ke keranjang!');
@@ -63,7 +73,7 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
-        if (!isset($cart[$product->id])) {
+        if (! isset($cart[$product->id])) {
             return redirect()
                 ->route('cart.index')
                 ->withErrors(['quantity' => 'Produk tidak ditemukan di keranjang.']);
@@ -80,6 +90,7 @@ class CartController extends Controller
         }
 
         $cart[$product->id]['quantity'] = $validated['quantity'];
+        $cart[$product->id]['price'] = $product->effective_price;
         session()->put('cart', $cart);
 
         return redirect()
