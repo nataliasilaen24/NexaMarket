@@ -13,7 +13,10 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-        return view('cart.index', compact('cart'));
+        $selectedItems = array_map('strval', session()->get('checkout_items', []));
+        $products = Product::whereIn('id', array_keys($cart))->get()->keyBy('id');
+
+        return view('cart.index', compact('cart', 'products', 'selectedItems'));
     }
 
     /**
@@ -23,12 +26,22 @@ class CartController extends Controller
     {
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
-        $quantity = max(1, (int) $request->input('quantity', 1));
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+        ]);
+        $quantity = $validated['quantity'];
+        $currentQuantity = (int) ($cart[$product->id]['quantity'] ?? 0);
 
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity'] += $quantity;
+        if ($product->stock < 1 || $currentQuantity + $quantity > $product->stock) {
+            return back()
+                ->withErrors(['quantity' => 'Jumlah produk melebihi stok yang tersedia.'])
+                ->withInput();
+        }
+
+        if (isset($cart[$product->id])) {
+            $cart[$product->id]['quantity'] = $currentQuantity + $quantity;
         } else {
-            $cart[$id] = [
+            $cart[$product->id] = [
                 "name" => $product->name,
                 "quantity" => $quantity,
                 "price" => $product->price,
@@ -37,7 +50,41 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+        return redirect()
+            ->route('cart.index')
+            ->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+    }
+
+    /**
+     * Memperbarui jumlah produk di keranjang.
+     */
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $cart = session()->get('cart', []);
+
+        if (!isset($cart[$product->id])) {
+            return redirect()
+                ->route('cart.index')
+                ->withErrors(['quantity' => 'Produk tidak ditemukan di keranjang.']);
+        }
+
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+        ]);
+
+        if ($product->stock < 1 || $validated['quantity'] > $product->stock) {
+            return back()
+                ->withErrors(['quantity' => 'Jumlah produk melebihi stok yang tersedia.'])
+                ->withInput();
+        }
+
+        $cart[$product->id]['quantity'] = $validated['quantity'];
+        session()->put('cart', $cart);
+
+        return redirect()
+            ->route('cart.index')
+            ->with('success', 'Jumlah produk berhasil diperbarui.');
     }
 
     /**
@@ -45,13 +92,22 @@ class CartController extends Controller
      */
     public function remove(Request $request)
     {
-        if ($request->id) {
-            $cart = session()->get('cart');
-            if (isset($cart[$request->id])) {
-                unset($cart[$request->id]);
-                session()->put('cart', $cart);
-            }
-            return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
-        }
+        $validated = $request->validate([
+            'id' => ['required', 'integer'],
+        ]);
+        $id = (string) $validated['id'];
+        $cart = session()->get('cart', []);
+        unset($cart[$id]);
+        session()->put('cart', $cart);
+
+        $checkoutItems = array_map('strval', session()->get('checkout_items', []));
+        session()->put(
+            'checkout_items',
+            array_values(array_filter($checkoutItems, fn ($itemId) => $itemId !== $id))
+        );
+
+        return redirect()
+            ->route('cart.index')
+            ->with('success', 'Produk berhasil dihapus dari keranjang.');
     }
 }

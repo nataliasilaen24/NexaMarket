@@ -215,6 +215,17 @@
         border: 1px solid #bfdbfe;
     }
 
+    .cart-validation-error {
+        margin: 0 0 16px;
+        padding: 12px 16px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #b91c1c;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
     @media (max-width: 860px) {
         .detail-grid {
             grid-template-columns: 1fr;
@@ -283,16 +294,22 @@
                     <p>{{ $product->description ?? 'Belum ada deskripsi untuk produk ini.' }}</p>
                 </div>
 
+                @if($errors->has('quantity'))
+                    <div class="cart-validation-error" role="alert">{{ $errors->first('quantity') }}</div>
+                @endif
+
                 <div class="action-row">
                     <form action="{{ route('cart.add', $product->id) }}" method="POST" style="display: flex; gap: 12px; flex: 1; flex-wrap: wrap; margin: 0;">
                         @csrf
                         <div class="quantity-picker">
-                            <button type="button" onclick="this.parentNode.querySelector('input').stepDown()">−</button>
-                            <input type="number" name="quantity" value="1" min="1" max="99">
-                            <button type="button" onclick="this.parentNode.querySelector('input').stepUp()">+</button>
+                            <button type="button" onclick="this.parentNode.querySelector('input').stepDown()" {{ $product->stock < 1 ? 'disabled' : '' }}>−</button>
+                            <input type="number" name="quantity" value="1" min="1" max="{{ max(1, $product->stock) }}" {{ $product->stock < 1 ? 'disabled' : '' }}>
+                            <button type="button" onclick="this.parentNode.querySelector('input').stepUp()" {{ $product->stock < 1 ? 'disabled' : '' }}>+</button>
                         </div>
 
-                        <button type="submit" class="btn-cart">Tambah ke Keranjang</button>
+                        <button type="submit" class="btn-cart" {{ $product->stock < 1 ? 'disabled' : '' }}>
+                            {{ $product->stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis' }}
+                        </button>
                     </form>
 
                     <a href="{{ route('shop') }}" class="btn-back">Kembali</a>

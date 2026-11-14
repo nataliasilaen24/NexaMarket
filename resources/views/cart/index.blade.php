@@ -67,6 +67,12 @@
         font-weight: 600;
     }
 
+    .alert-error {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #b91c1c;
+    }
+
     .cart-layout {
         display: grid;
         grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr);
@@ -84,7 +90,7 @@
 
     .cart-item {
         display: grid;
-        grid-template-columns: 110px minmax(0, 1fr) auto auto;
+        grid-template-columns: 28px 110px minmax(0, 1fr) auto auto;
         gap: 18px;
         align-items: center;
         padding: 22px 24px;
@@ -93,6 +99,18 @@
 
     .cart-item:last-child {
         border-bottom: none;
+    }
+
+    .select-item {
+        display: flex;
+        justify-content: center;
+    }
+
+    .cart-item-checkbox {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb;
+        cursor: pointer;
     }
 
     .product-image-wrap {
@@ -130,6 +148,45 @@
         gap: 12px;
         color: #64748b;
         font-size: 0.88rem;
+    }
+
+    .quantity-form {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 12px;
+    }
+
+    .quantity-form button {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .quantity-form button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .quantity-form input {
+        width: 48px;
+        height: 32px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .quantity-update-btn {
+        width: auto !important;
+        padding: 0 9px;
+        font-size: 12px !important;
     }
 
     .item-price {
@@ -212,6 +269,11 @@
         cursor: pointer;
     }
 
+    .checkout-btn:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+    }
+
     .empty-state {
         background: white;
         border: 1px solid #e2e8f0;
@@ -263,15 +325,31 @@
         }
 
         .cart-item {
-            grid-template-columns: 88px 1fr;
+            grid-template-columns: 22px 72px minmax(0, 1fr);
+            gap: 10px;
+            padding: 16px 12px;
+        }
+
+        .product-image-wrap {
+            width: 72px;
+            height: 72px;
+        }
+
+        .item-info {
+            grid-column: 3;
+        }
+
+        .select-item {
+            grid-row: 1;
+            grid-column: 1;
         }
 
         .item-price {
-            grid-column: 2;
+            grid-column: 3;
         }
 
         .remove-form {
-            grid-column: 2;
+            grid-column: 3;
             justify-content: flex-start;
         }
     }
@@ -296,11 +374,12 @@
         @if(session('success'))
             <div class="alert" role="status">{{ session('success') }}</div>
         @endif
-
-        @php
-            $cart = session('cart', []);
-            $total = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
-        @endphp
+        @if($errors->has('quantity'))
+            <div class="alert alert-error" role="alert">{{ $errors->first('quantity') }}</div>
+        @endif
+        @if($errors->has('items'))
+            <div class="alert alert-error" role="alert">{{ $errors->first('items') }}</div>
+        @endif
 
         @if(count($cart) === 0)
             <div class="empty-state">
@@ -310,10 +389,28 @@
                 <a href="{{ route('shop') }}" class="shop-btn">Mulai Belanja</a>
             </div>
         @else
+            <form id="checkout-form" action="{{ route('checkout.start') }}" method="POST">
+                @csrf
+            </form>
+
             <div class="cart-layout">
                 <div class="cart-list">
                     @foreach($cart as $id => $item)
                         <article class="cart-item">
+                            <div class="select-item">
+                                <input
+                                    class="cart-item-checkbox"
+                                    type="checkbox"
+                                    name="items[]"
+                                    value="{{ $id }}"
+                                    form="checkout-form"
+                                    data-price="{{ $item['price'] }}"
+                                    data-quantity="{{ $item['quantity'] }}"
+                                    aria-label="Pilih {{ $item['name'] }} untuk checkout"
+                                    {{ in_array((string) $id, $selectedItems, true) ? 'checked' : '' }}
+                                >
+                            </div>
+
                             <div class="product-image-wrap">
                                 @if(!empty($item['image']))
                                     <img class="product-image" src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}">
@@ -325,16 +422,26 @@
                             <div class="item-info">
                                 <h2>{{ $item['name'] }}</h2>
                                 <div class="item-meta">
-                                    <span>Jumlah: {{ $item['quantity'] }}</span>
                                     <span>Harga satuan: Rp {{ number_format($item['price'], 0, ',', '.') }}</span>
                                 </div>
+                                @php
+                                    $stock = $products->get($id)?->stock ?? $item['quantity'];
+                                @endphp
+                                <form class="quantity-form" action="{{ route('cart.update', $id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="button" aria-label="Kurangi jumlah" onclick="changeCartQuantity(this, -1)">−</button>
+                                    <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" max="{{ max(1, $stock) }}" aria-label="Jumlah {{ $item['name'] }}">
+                                    <button type="button" aria-label="Tambah jumlah" onclick="changeCartQuantity(this, 1)" {{ $item['quantity'] >= $stock ? 'disabled' : '' }}>+</button>
+                                    <button type="submit" class="quantity-update-btn">Perbarui</button>
+                                </form>
                             </div>
 
                             <div class="item-price">
                                 Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
                             </div>
 
-                            <form class="remove-form" action="{{ route('cart.remove') }}" method="POST" onsubmit="return confirm('Hapus produk ini dari keranjang?')">
+                            <form class="remove-form" action="{{ route('cart.remove') }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <input type="hidden" name="id" value="{{ $id }}">
@@ -348,8 +455,13 @@
                     <h3>Ringkasan Belanja</h3>
 
                     <div class="summary-row">
-                        <span>Subtotal</span>
-                        <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong>
+                        <span>Produk dipilih</span>
+                        <strong id="selected-count">0 barang</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Subtotal pilihan</span>
+                        <strong id="selected-subtotal">Rp 0</strong>
                     </div>
 
                     <div class="summary-row">
@@ -364,13 +476,53 @@
 
                     <div class="summary-total">
                         <span>Total</span>
-                        <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                        <span id="selected-total">Rp 0</span>
                     </div>
 
-                    <button type="button" class="checkout-btn">Checkout</button>
+                    <button type="submit" form="checkout-form" id="checkout-button" class="checkout-btn" disabled>
+                        Checkout Produk Dipilih
+                    </button>
                 </aside>
             </div>
         @endif
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function updateCheckoutSummary() {
+        const selectedItems = document.querySelectorAll('.cart-item-checkbox:checked');
+        let quantity = 0;
+        let subtotal = 0;
+
+        selectedItems.forEach((item) => {
+            quantity += Number(item.dataset.quantity);
+            subtotal += Number(item.dataset.price) * Number(item.dataset.quantity);
+        });
+
+        const formattedSubtotal = 'Rp ' + subtotal.toLocaleString('id-ID');
+        document.getElementById('selected-count').textContent = quantity + ' barang';
+        document.getElementById('selected-subtotal').textContent = formattedSubtotal;
+        document.getElementById('selected-total').textContent = formattedSubtotal;
+        document.getElementById('checkout-button').disabled = selectedItems.length === 0;
+    }
+
+    document.querySelectorAll('.cart-item-checkbox').forEach((checkbox) => {
+        checkbox.addEventListener('change', updateCheckoutSummary);
+    });
+    updateCheckoutSummary();
+
+    function changeCartQuantity(button, change) {
+        const input = button.parentNode.querySelector('input[name="quantity"]');
+        const nextQuantity = Number(input.value) + change;
+        const minimum = Number(input.min);
+        const maximum = Number(input.max);
+
+        if (nextQuantity >= minimum && nextQuantity <= maximum) {
+            input.value = nextQuantity;
+            button.form.requestSubmit();
+        }
+    }
+</script>
+@endpush

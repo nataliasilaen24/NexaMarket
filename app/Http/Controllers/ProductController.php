@@ -42,6 +42,7 @@ class ProductController extends Controller
     public function shop(Request $request)
     {
         $search = $request->input('search');
+        $category = $request->input('category');
 
         $products = Product::with('category')
             ->when($search, function ($query, $search) {
@@ -53,11 +54,16 @@ class ProductController extends Controller
                       });
                 });
             })
+            ->when($category, function ($query, $category) {
+                $query->whereHas('category', function ($categoryQuery) use ($category) {
+                    $categoryQuery->where('slug', $category);
+                });
+            })
             ->latest()
             ->paginate(12)
             ->withQueryString();
 
-        return view('products.index', compact('products', 'search'));
+        return view('products.index', compact('products', 'search', 'category'));
     }
 
     /**

@@ -1,4 +1,7 @@
 <header class="main-header">
+    @php
+        $cartCount = collect(session('cart', []))->sum('quantity');
+    @endphp
 
     <!-- Logo -->
     <a href="{{ route('home') }}" class="brand">
@@ -34,6 +37,9 @@
            aria-label="Keranjang"
            title="Keranjang">
             <i class="fa-solid fa-cart-shopping"></i>
+            @if($cartCount > 0)
+                <span class="cart-count">{{ $cartCount }}</span>
+            @endif
         </a>
     </nav>
 
@@ -123,6 +129,7 @@
 
 /* IKON KERANJANG */
 .main-nav .cart-link {
+    position: relative;
     width: 42px;
     height: 42px;
     min-width: 42px;
@@ -137,6 +144,24 @@
     font-size: 19px;
     text-decoration: none;
     transition: background 0.2s, color 0.2s;
+}
+
+.main-nav .cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    display: grid;
+    place-items: center;
+    border: 2px solid white;
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .main-nav .cart-link i {

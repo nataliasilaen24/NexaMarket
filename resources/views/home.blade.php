@@ -355,6 +355,17 @@
         color: #64748b;
     }
 
+    .cart-validation-error {
+        margin: 0 0 16px;
+        padding: 12px 16px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #b91c1c;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
     /* Promo Banner Bawah */
     .promo-banner-bottom {
         background: linear-gradient(135deg, #0f172a, #1e3a8a);
@@ -460,7 +471,7 @@
         <div class="hero-banner">
             <h1>Upgrade harimu,<br>hemat hingga 40%.</h1>
             <p>Temukan ragam pilihan produk terbaik untuk kebutuhan harianmu langsung di genggaman.</p>
-            <a href="{{ route('products.index') }}" class="btn-hero">
+            <a href="{{ route('shop') }}" class="btn-hero">
                 Belanja Sekarang
             </a>
         </div>
@@ -480,32 +491,32 @@
 
     <!-- Shortcut Menu -->
     <div class="shortcut-menu">
-        <a href="{{ route('products.index') }}" class="shortcut-item">
+        <a href="{{ route('shop') }}" class="shortcut-item">
             <div class="shortcut-icon">⚡</div>
             Flash Sale
         </a>
 
-        <a href="{{ route('products.index') }}" class="shortcut-item">
+        <a href="{{ route('shop') }}" class="shortcut-item">
             <div class="shortcut-icon">🚚</div>
             Gratis Ongkir
         </a>
 
-        <a href="{{ route('products.index') }}" class="shortcut-item">
+        <a href="{{ route('shop') }}" class="shortcut-item">
             <div class="shortcut-icon">⭐</div>
             NexaMall
         </a>
 
-        <a href="{{ route('products.index') }}" class="shortcut-item">
+        <a href="{{ route('shop') }}" class="shortcut-item">
             <div class="shortcut-icon">📱</div>
             Pulsa & Tagihan
         </a>
 
-        <a href="{{ route('products.index') }}" class="shortcut-item">
+        <a href="{{ route('shop') }}" class="shortcut-item">
             <div class="shortcut-icon">🏷️</div>
             Semua Promo
         </a>
 
-        <a href="{{ route('products.index') }}" class="shortcut-item">
+        <a href="{{ route('shop') }}" class="shortcut-item">
             <div class="shortcut-icon">🛍️</div>
             Supermarket
         </a>
@@ -550,10 +561,14 @@
             @endif
         </div>
 
-        <a href="{{ route('products.index') }}" class="see-all">
+        <a href="{{ route('shop') }}" class="see-all">
             Lihat Semua Produk &gt;
         </a>
     </div>
+
+    @if($errors->has('quantity'))
+        <div class="cart-validation-error" role="alert">{{ $errors->first('quantity') }}</div>
+    @endif
 
     <div class="product-grid">
         @forelse($products as $product)
@@ -587,7 +602,7 @@
 
                 <div class="product-footer">
                     <div class="quantity-box">
-                        <input type="number" name="quantity" form="cart-form-{{ $product->id }}" value="1" min="1" max="99">
+                        <input type="number" name="quantity" form="cart-form-{{ $product->id }}" value="1" min="1" max="{{ max(1, $product->stock) }}" {{ $product->stock < 1 ? 'disabled' : '' }}>
                         <span>Qty</span>
                     </div>
 
@@ -595,8 +610,12 @@
 
                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="add-cart-form" id="cart-form-{{ $product->id }}">
                         @csrf
-                        <button type="submit" class="add-cart-btn" title="Tambah ke keranjang">
-                            <i class="fa-solid fa-cart-plus"></i>
+                        <button type="submit" class="add-cart-btn" title="Tambah ke keranjang" {{ $product->stock < 1 ? 'disabled' : '' }}>
+                            @if($product->stock > 0)
+                                <i class="fa-solid fa-cart-plus"></i>
+                            @else
+                                Habis
+                            @endif
                         </button>
                     </form>
                 </div>
@@ -615,7 +634,7 @@
             <p>Nikmati diskon hingga 40% untuk produk pilihan di musim belanja tahun ini.</p>
         </div>
 
-        <a href="{{ route('products.index') }}" class="btn-hero">
+        <a href="{{ route('shop') }}" class="btn-hero">
             Jelajahi Promo
         </a>
     </div>

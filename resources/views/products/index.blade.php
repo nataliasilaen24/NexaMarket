@@ -1,281 +1,260 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Produk - NexaMarket')
+@section('title', 'Produk - NexaMarket')
 
 @push('styles')
 <style>
-    .product-container {
+    .shop-page {
         max-width: 1200px;
-        margin: 35px auto;
+        margin: 38px auto 70px;
         padding: 0 20px;
     }
 
-    .product-card {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 28px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .product-heading {
+    .shop-heading {
         display: flex;
+        align-items: end;
         justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 25px;
+        gap: 20px;
+        margin-bottom: 24px;
     }
 
-    .product-heading h1 {
+    .shop-heading h1 {
         color: #172554;
-        font-size: 25px;
-        margin-bottom: 7px;
+        font-size: clamp(26px, 4vw, 34px);
+        margin-bottom: 8px;
     }
 
-    .product-heading p {
+    .shop-heading p {
         color: #64748b;
-        font-size: 14px;
     }
 
-    .btn-primary {
-        display: inline-block;
+    .shop-search {
+        display: flex;
+        width: min(100%, 360px);
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+    }
+
+    .shop-search input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px;
+        border: 0;
+        outline: 0;
+    }
+
+    .shop-search button {
+        padding: 0 16px;
+        border: 0;
         background: #2563eb;
         color: white;
-        padding: 11px 17px;
-        border-radius: 7px;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .btn-primary:hover {
-        background: #1d4ed8;
-    }
-
-    .alert-success {
-        background: #dcfce7;
-        color: #166534;
-        padding: 13px 15px;
-        border-radius: 7px;
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-
-    .table-wrapper {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    .product-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 750px;
-    }
-
-    .product-table th {
-        background: #f8fafc;
-        color: #475569;
-        font-size: 13px;
         font-weight: 700;
-        padding: 15px 12px;
-        text-align: left;
-    }
-
-    .product-table td {
-        padding: 14px 12px;
-        border-bottom: 1px solid #e5e7eb;
-        font-size: 14px;
-        color: #334155;
-    }
-
-    .product-table tbody tr:hover {
-        background: #f8fafc;
-    }
-
-    .product-image {
-        width: 55px;
-        height: 55px;
-        object-fit: cover;
-        border-radius: 7px;
-    }
-
-    .no-image {
-        color: #94a3b8;
-        font-size: 12px;
-    }
-
-    .product-name {
-        font-weight: 600;
-        color: #172554;
-    }
-
-    .action-buttons {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .btn-edit {
-        color: #2563eb;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 13px;
-    }
-
-    .btn-delete {
-        border: none;
-        background: #fff1f2;
-        color: #dc2626;
-        padding: 7px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: 600;
         cursor: pointer;
     }
 
-    .btn-delete:hover {
-        background: #ffe4e6;
+    .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
     }
 
-    .empty-row {
+    .shop-product {
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+    }
+
+    .shop-product-image {
+        display: block;
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        background: #f1f5f9;
+    }
+
+    .shop-product-info {
+        padding: 16px 16px 10px;
+    }
+
+    .shop-product-category {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .shop-product-name {
+        min-height: 42px;
+        margin: 7px 0;
+        color: #172554;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .shop-product-name a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .shop-product-price {
+        color: #2563eb;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .shop-product-stock {
+        margin-top: 6px;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .shop-product-actions {
+        display: flex;
+        gap: 8px;
+        padding: 12px 16px 16px;
+    }
+
+    .shop-product-actions a,
+    .shop-product-actions button {
+        min-height: 40px;
+        border: 0;
+        border-radius: 9px;
+        font-weight: 700;
         text-align: center;
-        padding: 35px !important;
-        color: #64748b !important;
+        text-decoration: none;
+        cursor: pointer;
     }
 
-    @media (max-width: 650px) {
-        .product-container {
-            margin: 20px auto;
-            padding: 0 12px;
-        }
+    .shop-detail-link {
+        display: grid;
+        flex: 1;
+        place-items: center;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 13px;
+    }
 
-        .product-card {
-            padding: 18px 12px;
-        }
+    .shop-add-form {
+        display: flex;
+        gap: 6px;
+    }
 
-        .product-heading {
-            align-items: flex-start;
+    .shop-add-form input {
+        width: 54px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        text-align: center;
+    }
+
+    .shop-add-form button {
+        padding: 0 12px;
+        background: #2563eb;
+        color: white;
+    }
+
+    .shop-add-form button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+    }
+
+    .shop-empty {
+        grid-column: 1 / -1;
+        padding: 55px 20px;
+        border-radius: 16px;
+        background: white;
+        color: #64748b;
+        text-align: center;
+    }
+
+    .shop-pagination {
+        margin-top: 28px;
+    }
+
+    @media (max-width: 680px) {
+        .shop-heading {
+            align-items: stretch;
             flex-direction: column;
         }
 
-        .product-heading h1 {
-            font-size: 22px;
+        .shop-search {
+            width: 100%;
         }
     }
 </style>
 @endpush
 
 @section('content')
-
-<div class="product-container">
-
-    <div class="product-card">
-
-        <div class="product-heading">
-            <div>
-                <h1>Daftar Produk</h1>
-                <p>Kelola produk yang tersedia di NexaMarket.</p>
-            </div>
-
-            <a href="{{ route('products.create') }}" class="btn-primary">
-                + Tambah Produk Baru
-            </a>
+<section class="shop-page">
+    <div class="shop-heading">
+        <div>
+            <h1>Belanja Produk</h1>
+            <p>Pilih produk dan jumlah yang ingin dimasukkan ke keranjang.</p>
         </div>
 
-        @if(session('success'))
-            <div class="alert-success" role="status">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="table-wrapper">
-            <table class="product-table">
-
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Gambar</th>
-                        <th>Nama Produk</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
-                        <th>Stok</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @forelse($products as $index => $product)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-
-                            <td>
-                                @if($product->image)
-                                    <img
-                                        src="{{ asset('storage/' . $product->image) }}"
-                                        alt="{{ $product->name }}"
-                                        class="product-image"
-                                    >
-                                @else
-                                    <span class="no-image">Tanpa Foto</span>
-                                @endif
-                            </td>
-
-                            <td class="product-name">
-                                {{ $product->name }}
-                            </td>
-
-                            <td>
-                                {{ $product->category->name ?? '-' }}
-                            </td>
-
-                            <td>
-                                Rp {{ number_format($product->price, 0, ',', '.') }}
-                            </td>
-
-                            <td>
-                                {{ $product->stock }}
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <a
-                                        href="{{ route('products.edit', $product->id) }}"
-                                        class="btn-edit">
-                                        Edit
-                                    </a>
-
-                                    <form
-                                        action="{{ route('products.destroy', $product->id) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="submit" class="btn-delete">
-                                            Hapus
-                                        </button>
-                                    </form>
-
-                                </div>
-                            </td>
-                        </tr>
-
-                    @empty
-                        <tr>
-                            <td colspan="7" class="empty-row">
-                                Belum ada produk yang ditambahkan.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-
-            </table>
-        </div>
-
+        <form class="shop-search" action="{{ route('shop') }}" method="GET">
+            @if($category)
+                <input type="hidden" name="category" value="{{ $category }}">
+            @endif
+            <input type="search" name="search" value="{{ $search ?? '' }}" placeholder="Cari produk...">
+            <button type="submit">Cari</button>
+        </form>
     </div>
 
-</div>
+    <div class="shop-grid">
+        @forelse($products as $product)
+            <article class="shop-product">
+                <a href="{{ route('products.show', $product) }}">
+                    @if($product->image)
+                        <img class="shop-product-image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                    @else
+                        <div class="shop-product-image" style="display:grid;place-items:center;color:#94a3b8">Tanpa Foto</div>
+                    @endif
+                </a>
 
+                <div class="shop-product-info">
+                    <span class="shop-product-category">{{ $product->category->name ?? 'Tanpa Kategori' }}</span>
+                    <h2 class="shop-product-name">
+                        <a href="{{ route('products.show', $product) }}">{{ $product->name }}</a>
+                    </h2>
+                    <div class="shop-product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                    <div class="shop-product-stock">
+                        {{ $product->stock > 0 ? 'Stok: ' . $product->stock : 'Stok habis' }}
+                    </div>
+                </div>
+
+                <div class="shop-product-actions">
+                    <a class="shop-detail-link" href="{{ route('products.show', $product) }}">Detail</a>
+                    <form class="shop-add-form" action="{{ route('cart.add', $product) }}" method="POST">
+                        @csrf
+                        <input
+                            type="number"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="{{ max(1, $product->stock) }}"
+                            aria-label="Jumlah {{ $product->name }}"
+                            {{ $product->stock < 1 ? 'disabled' : '' }}
+                        >
+                        <button
+                            type="submit"
+                            aria-label="Tambah {{ $product->name }} ke keranjang"
+                            {{ $product->stock < 1 ? 'disabled' : '' }}
+                        >
+                            <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+                            Keranjang
+                        </button>
+                    </form>
+                </div>
+            </article>
+        @empty
+            <div class="shop-empty">
+                Produk belum tersedia atau tidak ditemukan.
+            </div>
+        @endforelse
+    </div>
+
+    <div class="shop-pagination">{{ $products->links() }}</div>
+</section>
 @endsection
