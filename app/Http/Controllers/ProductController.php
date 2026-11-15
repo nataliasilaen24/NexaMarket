@@ -65,8 +65,7 @@ class ProductController extends Controller
                 });
             })
             ->latest()
-            ->paginate(12)
-            ->withQueryString();
+            ->get();
 
         $pageTitle = 'Belanja Produk';
         $pageDescription = 'Pilih produk dan jumlah yang ingin dimasukkan ke keranjang.';

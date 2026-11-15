@@ -230,7 +230,13 @@
             <article class="shop-product">
                 <a href="{{ route('products.show', $product) }}">
                     @if($product->image)
-                        <img class="shop-product-image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        <img
+                            class="shop-product-image"
+                            src="{{ $product->image_url }}"
+                            alt="{{ $product->name }}"
+                            loading="lazy"
+                            decoding="async"
+                        >
                     @else
                         <div class="shop-product-image" style="display:grid;place-items:center;color:#94a3b8">Tanpa Foto</div>
                     @endif
@@ -286,6 +292,8 @@
         @endforelse
     </div>
 
-    <div class="shop-pagination">{{ $products->links() }}</div>
+    @if($products instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+        <div class="shop-pagination">{{ $products->links() }}</div>
+    @endif
 </section>
 @endsection

@@ -31,6 +31,61 @@ class CustomerCatalogTest extends TestCase
             ->assertDontSee('Hapus');
     }
 
+    public function test_shop_shows_every_product_on_one_page(): void
+    {
+        $category = Category::create([
+            'name' => 'Pakaian',
+            'slug' => 'pakaian',
+        ]);
+        $productNames = [];
+
+        for ($index = 1; $index <= 15; $index++) {
+            $name = 'Produk Tes '.$index;
+            $productNames[] = $name;
+
+            Product::create([
+                'category_id' => $category->id,
+                'name' => $name,
+                'slug' => 'produk-tes-'.$index,
+                'price' => 50000,
+                'stock' => 5,
+            ]);
+        }
+
+        $response = $this->get(route('shop'))
+            ->assertOk()
+            ->assertDontSee('Pagination Navigation');
+
+        foreach ($productNames as $name) {
+            $response->assertSee($name);
+        }
+    }
+
+    public function test_promo_list_keeps_pagination(): void
+    {
+        $category = Category::create([
+            'name' => 'Pakaian',
+            'slug' => 'pakaian',
+        ]);
+
+        for ($index = 1; $index <= 13; $index++) {
+            Product::create([
+                'category_id' => $category->id,
+                'name' => 'Promo Tes '.$index,
+                'slug' => 'promo-tes-'.$index,
+                'price' => 50000,
+                'promo_price' => 35000,
+                'is_promo' => true,
+                'stock' => 5,
+            ]);
+        }
+
+        $this->get(route('promotions.index'))
+            ->assertOk()
+            ->assertSee('Pagination Navigation', false)
+            ->assertSee('Go to page 2', false);
+    }
+
     public function test_home_replaces_category_links_with_promo_products(): void
     {
         $product = $this->createProduct();

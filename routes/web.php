@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
         ->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])
         ->name('profile.update');
-    Route::view('/kontak', 'profile')
+    Route::view('/kontak', 'contact')
         ->name('contact');
 
     Route::get('/shop', [ProductController::class, 'shop'])

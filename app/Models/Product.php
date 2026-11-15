@@ -13,6 +13,7 @@ class Product extends Model
         'slug',
         'description',
         'price',
+        'image',
         'is_promo',
         'promo_price',
         'stock',
@@ -37,6 +38,20 @@ class Product extends Model
         }
 
         return (string) $this->price;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        $imagePath = ltrim($this->image, '/');
+        $isPublicAsset = str_starts_with($imagePath, 'images/');
+        $path = $isPublicAsset ? $imagePath : 'storage/'.$imagePath;
+        $encodedPath = implode('/', array_map('rawurlencode', explode('/', $path)));
+
+        return asset($encodedPath);
     }
 
     public function category(): BelongsTo

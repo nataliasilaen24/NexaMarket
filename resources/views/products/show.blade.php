@@ -258,7 +258,7 @@
         <div class="detail-grid">
             <div class="detail-image-wrap">
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="detail-image">
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="detail-image">
                 @else
                     <div class="detail-image" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:28px;background:#e2e8f0;">Tanpa Foto</div>
                 @endif

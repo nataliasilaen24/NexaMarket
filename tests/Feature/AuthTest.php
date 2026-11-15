@@ -18,6 +18,7 @@ class AuthTest extends TestCase
         $this->get(route('register'))->assertOk();
         $this->get(route('home'))->assertRedirect(route('login'));
         $this->get(route('profile.edit'))->assertRedirect(route('login'));
+        $this->get(route('contact'))->assertRedirect(route('login'));
         $this->get(route('shop'))->assertRedirect(route('login'));
         $this->get(route('promotions.index'))->assertRedirect(route('login'));
         $this->get(route('cart.index'))->assertRedirect(route('login'));
@@ -47,6 +48,11 @@ class AuthTest extends TestCase
             ->assertSee('ayu@example.test')
             ->assertSee(route('profile.edit'))
             ->assertDontSee('name="password"', false);
+
+        $this->get(route('contact'))
+            ->assertOk()
+            ->assertSee('Kami siap membantu')
+            ->assertSee('support@nexamarket.id');
 
         $this->get(route('profile.edit'))
             ->assertOk()

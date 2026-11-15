@@ -579,7 +579,7 @@
                     <a href="{{ route('products.show', $product->id) }}">
                         @if($product->image)
                             <img
-                                src="{{ asset('storage/' . $product->image) }}"
+                                src="{{ $product->image_url }}"
                                 alt="{{ $product->name }}"
                                 class="product-img"
                             >

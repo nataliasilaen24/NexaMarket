@@ -167,7 +167,7 @@
             <div class="form-group">
                 <label for="image">Foto Produk</label>
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="current-img">
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="current-img">
                     <small style="color: #666; display: block; margin-bottom: 5px;">Foto saat ini (biarkan kosong jika tidak ingin mengubah foto).</small>
                 @endif
                 <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/jpg">
