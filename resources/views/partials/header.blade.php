@@ -34,7 +34,7 @@
             <a href="{{ route('orders.index') }}">Pesanan</a>
             <a href="{{ route('profile') }}">Profil</a>
             @if(auth()->user()->is_admin)
-                <a href="{{ route('admin.products.index') }}">Kelola Promo</a>
+                <a href="{{ route('admin.products.index') }}">Kelola Produk</a>
             @endif
 
             <a href="{{ route('cart.index') }}"

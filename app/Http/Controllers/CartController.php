@@ -33,6 +33,7 @@ class CartController extends Controller
     public function add(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+        abort_unless($product->is_active, 404);
         $cart = session()->get('cart', []);
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
@@ -71,6 +72,7 @@ class CartController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+        abort_unless($product->is_active, 404);
         $cart = session()->get('cart', []);
 
         if (! isset($cart[$product->id])) {

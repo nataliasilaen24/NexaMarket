@@ -17,6 +17,7 @@ class Product extends Model
         'is_promo',
         'promo_price',
         'stock',
+        'is_active',
     ];
 
     protected function casts(): array
@@ -24,6 +25,7 @@ class Product extends Model
         return [
             'is_promo' => 'boolean',
             'promo_price' => 'decimal:2',
+            'is_active' => 'boolean',
         ];
     }
 

@@ -33,6 +33,20 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        if (Auth::user()->is_admin) {
+            $intendedUrl = $request->session()->pull('url.intended');
+            $intendedPath = is_string($intendedUrl) ? parse_url($intendedUrl, PHP_URL_PATH) : null;
+
+            if (is_string($intendedPath) && ($intendedPath === '/admin' || str_starts_with($intendedPath, '/admin/'))) {
+                $intendedQuery = parse_url($intendedUrl, PHP_URL_QUERY);
+                $destination = url($intendedPath).($intendedQuery ? '?'.$intendedQuery : '');
+
+                return redirect()->to($destination);
+            }
+
+            return redirect()->route('admin.dashboard');
+        }
+
         return redirect()->intended(route('home'));
     }
 

@@ -8,11 +8,33 @@ use Illuminate\Validation\ValidationException;
 
 class AdminPromoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::orderBy('name')->paginate(20);
+        $search = trim((string) $request->input('search', ''));
+        $products = Product::with('category')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($productQuery) use ($search) {
+                    $productQuery
+                        ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
+                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                            $categoryQuery->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%']);
+                        });
+                });
+            })
+            ->orderBy('name')
+            ->get();
 
-        return view('admin.products.index', compact('products'));
+        $productCount = Product::count();
+        $activeProductCount = Product::where('is_active', true)->count();
+        $inactiveProductCount = $productCount - $activeProductCount;
+
+        return view('admin.products.index', compact(
+            'products',
+            'search',
+            'productCount',
+            'activeProductCount',
+            'inactiveProductCount',
+        ));
     }
 
     public function update(Request $request, Product $product)

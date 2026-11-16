@@ -63,17 +63,34 @@ class AuthTest extends TestCase
     public function test_admin_account_uses_the_shared_login_and_can_access_promo_management(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
+        $this->get(route('shop'))->assertRedirect(route('login'));
+
         $this->post(route('login.store'), [
             'email' => $admin->email,
             'password' => 'password',
-        ])->assertRedirect(route('home'));
+        ])->assertRedirect(route('admin.dashboard'));
 
         $this->assertAuthenticatedAs($admin);
+        $this->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('Dashboard Admin')
+            ->assertDontSee('Pesanan Saya');
         $this->get(route('profile'))
             ->assertOk()
             ->assertSee('Admin')
-            ->assertSee('Kelola Promo');
+            ->assertSee('Kelola Produk');
         $this->get(route('admin.products.index'))->assertOk();
+    }
+
+    public function test_customer_login_keeps_the_requested_store_destination(): void
+    {
+        $customer = User::factory()->create();
+        $this->get(route('shop'))->assertRedirect(route('login'));
+
+        $this->post(route('login.store'), [
+            'email' => $customer->email,
+            'password' => 'password',
+        ])->assertRedirect(route('shop'));
     }
 
     public function test_admin_seeder_accepts_a_short_password(): void

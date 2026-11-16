@@ -268,7 +268,7 @@
                 @if($user->is_admin)
                     <a class="profile-action" href="{{ route('admin.products.index') }}">
                         <i class="fa-solid fa-tags" aria-hidden="true"></i>
-                        Kelola Promo
+                        Kelola Produk
                     </a>
                 @endif
                 <form action="{{ route('logout') }}" method="POST">

@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminPromoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -37,8 +40,11 @@ Route::middleware('auth')->group(function () {
         ->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])
         ->name('profile.update');
-    Route::view('/kontak', 'contact')
+    Route::get('/kontak', [ContactMessageController::class, 'create'])
         ->name('contact');
+    Route::post('/kontak', [ContactMessageController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('contact.store');
 
     Route::get('/shop', [ProductController::class, 'shop'])
         ->name('shop');
@@ -75,8 +81,48 @@ Route::middleware('auth')->group(function () {
         ->name('checkout.confirmation');
 
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])
+            ->name('dashboard');
+        Route::get('/orders', [AdminController::class, 'orders'])
+            ->name('orders.index');
+        Route::get('/orders/{order}', [AdminController::class, 'orderDetails'])
+            ->name('orders.show');
+        Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])
+            ->name('orders.status.update');
+        Route::get('/contacts', [ContactMessageController::class, 'adminIndex'])
+            ->name('contacts.index');
+        Route::get('/contacts/{contactMessage}', [ContactMessageController::class, 'show'])
+            ->name('contacts.show');
+        Route::patch('/contacts/{contactMessage}/status', [ContactMessageController::class, 'updateStatus'])
+            ->name('contacts.status.update');
+        Route::post('/contacts/{contactMessage}/reply', [ContactMessageController::class, 'reply'])
+            ->name('contacts.reply');
+        Route::delete('/contacts/{contactMessage}', [ContactMessageController::class, 'destroy'])
+            ->name('contacts.destroy');
+        Route::get('/categories', [CategoryController::class, 'adminIndex'])
+            ->name('categories.index');
+        Route::get('/categories/create', [CategoryController::class, 'create'])
+            ->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])
+            ->name('categories.store');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])
+            ->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])
+            ->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
+            ->name('categories.destroy');
         Route::get('/products', [AdminPromoController::class, 'index'])
             ->name('products.index');
+        Route::get('/products/create', [ProductController::class, 'create'])
+            ->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])
+            ->name('products.store');
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+            ->name('products.edit');
+        Route::put('/products/{product}', [ProductController::class, 'update'])
+            ->name('products.update');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+            ->name('products.destroy');
         Route::put('/products/{product}/promo', [AdminPromoController::class, 'update'])
             ->name('products.promo.update');
     });

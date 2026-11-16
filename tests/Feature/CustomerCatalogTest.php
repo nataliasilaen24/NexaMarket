@@ -31,6 +31,18 @@ class CustomerCatalogTest extends TestCase
             ->assertDontSee('Hapus');
     }
 
+    public function test_inactive_products_are_hidden_from_the_store_and_cannot_be_added_to_cart(): void
+    {
+        $product = $this->createProduct();
+        $product->update(['is_active' => false]);
+
+        $this->get(route('shop'))
+            ->assertOk()
+            ->assertDontSee($product->name);
+        $this->get(route('products.show', $product))->assertNotFound();
+        $this->post(route('cart.add', $product), ['quantity' => 1])->assertNotFound();
+    }
+
     public function test_shop_shows_every_product_on_one_page(): void
     {
         $category = Category::create([

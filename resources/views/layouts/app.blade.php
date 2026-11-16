@@ -39,8 +39,9 @@
 
 <body>
 
-    <!-- Header utama NexaMarket -->
-    @include('partials.header')
+    @unless(request()->routeIs('admin.*'))
+        @include('partials.header')
+    @endunless
 
     <!-- Konten halaman -->
     <main>

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -18,6 +19,7 @@ class ProductController extends Controller
 
         // Mengambil produk dan menjalankan pencarian.
         $products = Product::with('category')
+            ->where('is_active', true)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'ilike', '%'.$search.'%')
@@ -31,6 +33,7 @@ class ProductController extends Controller
             ->get();
 
         $promoProducts = Product::with('category')
+            ->where('is_active', true)
             ->where('is_promo', true)
             ->whereColumn('promo_price', '<', 'price')
             ->where('stock', '>', 0)
@@ -50,6 +53,7 @@ class ProductController extends Controller
         $category = $request->input('category');
 
         $products = Product::with('category')
+            ->where('is_active', true)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'ilike', '%'.$search.'%')
@@ -81,6 +85,7 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
         $products = Product::with('category')
+            ->where('is_active', true)
             ->where('is_promo', true)
             ->whereColumn('promo_price', '<', 'price')
             ->where('stock', '>', 0)
@@ -138,9 +143,12 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'is_active' => 'sometimes|boolean',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+        $validated['slug'] = $this->makeSlug($validated['name']);
+        $validated['is_active'] = $request->boolean('is_active', true);
 
         // Menyimpan gambar produk.
         $imagePath = null;
@@ -154,7 +162,7 @@ class ProductController extends Controller
         Product::create($validated);
 
         return redirect()
-            ->route('products.index')
+            ->route('admin.products.index')
             ->with('success', 'Produk berhasil ditambahkan.');
     }
 
@@ -163,6 +171,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        abort_unless($product->is_active, 404);
+
         $product->load('category');
 
         return view('products.show', compact('product'));
@@ -188,9 +198,16 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'is_active' => 'sometimes|boolean',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+        if (array_key_exists('is_active', $validated)) {
+            $validated['is_active'] = $request->boolean('is_active');
+        }
+        if ($validated['name'] !== $product->name) {
+            $validated['slug'] = $this->makeSlug($validated['name'], $product->id);
+        }
 
         // Menghapus gambar lama jika ada gambar baru.
         if ($request->hasFile('image')) {
@@ -210,7 +227,7 @@ class ProductController extends Controller
         $product->update($validated);
 
         return redirect()
-            ->route('products.index')
+            ->route('admin.products.index')
             ->with('success', 'Produk berhasil diperbarui.');
     }
 
@@ -231,7 +248,22 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()
-            ->route('products.index')
+            ->route('admin.products.index')
             ->with('success', 'Produk berhasil dihapus.');
+    }
+
+    private function makeSlug(string $name, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($name);
+        $slug = $baseSlug;
+        $suffix = 2;
+
+        while (Product::where('slug', $slug)
+            ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+            ->exists()) {
+            $slug = $baseSlug.'-'.$suffix++;
+        }
+
+        return $slug;
     }
 }

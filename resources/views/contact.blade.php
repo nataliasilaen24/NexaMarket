@@ -285,6 +285,113 @@
         background: #fff;
     }
 
+    .contact-message-card {
+        margin-top: 24px;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: clamp(20px, 4vw, 30px);
+        background: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, .08);
+    }
+
+    .contact-message-card h2 {
+        margin-bottom: 7px;
+        color: #0f172a;
+        font-size: 21px;
+    }
+
+    .contact-message-intro {
+        margin-bottom: 20px;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .contact-message-form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .contact-message-field {
+        display: grid;
+        gap: 7px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .contact-message-field-full {
+        grid-column: 1 / -1;
+    }
+
+    .contact-message-field input,
+    .contact-message-field textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        padding: 11px 12px;
+        outline: 0;
+        background: #fff;
+        color: #0f172a;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .contact-message-field input {
+        min-height: 44px;
+    }
+
+    .contact-message-field textarea {
+        min-height: 145px;
+        resize: vertical;
+    }
+
+    .contact-message-field input:focus,
+    .contact-message-field textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+    }
+
+    .contact-message-submit {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        justify-self: start;
+        border: 0;
+        border-radius: 9px;
+        padding: 0 17px;
+        background: #1d4ed8;
+        color: #fff;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .contact-message-submit:hover {
+        background: #1e40af;
+    }
+
+    .contact-message-alert {
+        margin-bottom: 17px;
+        border: 1px solid #bbf7d0;
+        border-radius: 9px;
+        padding: 12px 14px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 13px;
+    }
+
+    .contact-message-alert.is-error {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
     .contact-detail {
         display: flex;
         gap: 13px;
@@ -410,6 +517,14 @@
             grid-template-columns: 1fr;
         }
 
+        .contact-message-form {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-message-field-full {
+            grid-column: auto;
+        }
+
         .contact-card {
             min-height: auto;
             padding: 23px;
@@ -517,6 +632,42 @@
                     </a>
                 </div>
             </article>
+        </section>
+
+        <section class="contact-message-card" aria-labelledby="contact-message-title">
+            <h2 id="contact-message-title">Kirim pesan kepada kami</h2>
+            <p class="contact-message-intro">Isi formulir berikut dan tim NexaMarket akan menghubungi Anda melalui email.</p>
+
+            @if(session('success'))
+                <div class="contact-message-alert" role="status">{{ session('success') }}</div>
+            @endif
+            @if($errors->any())
+                <div class="contact-message-alert is-error" role="alert">{{ $errors->first() }}</div>
+            @endif
+
+            <form class="contact-message-form" action="{{ route('contact.store') }}" method="POST">
+                @csrf
+                <label class="contact-message-field">
+                    Nama
+                    <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}" maxlength="120" autocomplete="name" required>
+                </label>
+                <label class="contact-message-field">
+                    Email
+                    <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}" maxlength="255" autocomplete="email" required>
+                </label>
+                <label class="contact-message-field contact-message-field-full">
+                    Subjek
+                    <input type="text" name="subject" value="{{ old('subject') }}" maxlength="180" required>
+                </label>
+                <label class="contact-message-field contact-message-field-full">
+                    Pesan
+                    <textarea name="body" maxlength="10000" required>{{ old('body') }}</textarea>
+                </label>
+                <button class="contact-message-submit" type="submit">
+                    <i class="fa-regular fa-paper-plane" aria-hidden="true"></i>
+                    Kirim Pesan
+                </button>
+            </form>
         </section>
 
         <section class="contact-details" id="info-layanan" aria-label="Informasi layanan">
