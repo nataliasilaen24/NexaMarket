@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminChatController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminPromoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\ProductController;
@@ -45,6 +47,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/kontak', [ContactMessageController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('contact.store');
+    Route::get('/chat/messages', [ChatController::class, 'index'])
+        ->middleware('throttle:60,1')
+        ->name('chat.messages');
+    Route::post('/chat/messages', [ChatController::class, 'store'])
+        ->middleware('throttle:30,1')
+        ->name('chat.store');
 
     Route::get('/shop', [ProductController::class, 'shop'])
         ->name('shop');
@@ -83,6 +91,17 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])
             ->name('dashboard');
+        Route::get('/chats', [AdminChatController::class, 'index'])
+            ->name('chats.index');
+        Route::get('/chats/conversations', [AdminChatController::class, 'conversations'])
+            ->middleware('throttle:60,1')
+            ->name('chats.conversations');
+        Route::get('/chats/{conversation}/messages', [AdminChatController::class, 'messages'])
+            ->middleware('throttle:60,1')
+            ->name('chats.messages');
+        Route::post('/chats/{conversation}/messages', [AdminChatController::class, 'store'])
+            ->middleware('throttle:30,1')
+            ->name('chats.store');
         Route::get('/orders', [AdminController::class, 'orders'])
             ->name('orders.index');
         Route::get('/orders/{order}', [AdminController::class, 'orderDetails'])

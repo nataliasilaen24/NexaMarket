@@ -13,6 +13,31 @@ class ContactMessageTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_contact_page_shows_configured_contact_details_and_location_map(): void
+    {
+        config([
+            'contact.address' => 'Jl. Contoh 10, Bandung',
+            'contact.whatsapp' => '+62 812 3456 7890',
+            'contact.email' => 'halo@nexamarket.example',
+            'contact.hours' => 'Senin–Jumat, 09.00–17.00',
+            'contact.instagram' => 'https://instagram.com/nexamarket',
+            'contact.facebook' => 'https://facebook.com/nexamarket',
+        ]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('contact'));
+
+        $response->assertOk()
+            ->assertSee('Hubungi Kami')
+            ->assertSee('Jl. Contoh 10, Bandung')
+            ->assertSee('+62 812 3456 7890')
+            ->assertSee('halo@nexamarket.example')
+            ->assertSee('Senin–Jumat, 09.00–17.00')
+            ->assertSee('https://instagram.com/nexamarket')
+            ->assertSee('https://facebook.com/nexamarket')
+            ->assertSee('maps.google.com/maps?q=Jl.+Contoh+10%2C+Bandung&amp;output=embed', false);
+    }
+
     public function test_customer_can_submit_a_contact_message_and_admin_can_manage_it(): void
     {
         Mail::fake();

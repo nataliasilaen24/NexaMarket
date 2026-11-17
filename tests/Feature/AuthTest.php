@@ -49,10 +49,21 @@ class AuthTest extends TestCase
             ->assertSee(route('profile.edit'))
             ->assertDontSee('name="password"', false);
 
+        config([
+            'contact.address' => null,
+            'contact.whatsapp' => null,
+            'contact.email' => null,
+            'contact.hours' => null,
+            'contact.instagram' => null,
+            'contact.facebook' => null,
+        ]);
+
         $this->get(route('contact'))
             ->assertOk()
-            ->assertSee('Kami siap membantu')
-            ->assertSee('support@nexamarket.id');
+            ->assertSee('Hubungi Kami')
+            ->assertSee('Informasi belum tersedia.')
+            ->assertDontSee('support@nexamarket.id')
+            ->assertDontSee('Jakarta, Indonesia');
 
         $this->get(route('profile.edit'))
             ->assertOk()

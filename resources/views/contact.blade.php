@@ -2,318 +2,221 @@
 
 @section('title', 'Hubungi Kami - NexaMarket')
 
+@php
+    $address = trim((string) config('contact.address', ''));
+    $whatsapp = trim((string) config('contact.whatsapp', ''));
+    $whatsappDigits = preg_replace('/\D+/', '', $whatsapp) ?? '';
+    $email = trim((string) config('contact.email', ''));
+    $hours = trim((string) config('contact.hours', ''));
+    $instagram = config('contact.instagram');
+    $facebook = config('contact.facebook');
+    $instagramUrl = is_string($instagram)
+        && filter_var($instagram, FILTER_VALIDATE_URL)
+        && parse_url($instagram, PHP_URL_SCHEME) === 'https'
+        ? $instagram
+        : null;
+    $facebookUrl = is_string($facebook)
+        && filter_var($facebook, FILTER_VALIDATE_URL)
+        && parse_url($facebook, PHP_URL_SCHEME) === 'https'
+        ? $facebook
+        : null;
+@endphp
+
 @push('styles')
 <style>
     .contact-page {
-        color: #0f172a;
-        background: #f8fafc;
         min-height: 80vh;
-        padding-bottom: 72px;
-    }
-
-    .contact-hero {
-        position: relative;
-        overflow: hidden;
-        padding: 66px 24px 94px;
-        color: #fff;
-        background: linear-gradient(125deg, #0f2f75, #2563eb 58%, #38bdf8);
-    }
-
-    .contact-hero::before,
-    .contact-hero::after {
-        position: absolute;
-        content: "";
-        border: 1px solid rgba(255, 255, 255, .16);
-        border-radius: 50%;
-        pointer-events: none;
-    }
-
-    .contact-hero::before {
-        width: 360px;
-        height: 360px;
-        top: -220px;
-        left: -90px;
-    }
-
-    .contact-hero::after {
-        width: 480px;
-        height: 480px;
-        right: -200px;
-        bottom: -340px;
-    }
-
-    .contact-hero-content {
-        position: relative;
-        z-index: 1;
-        display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(250px, .9fr);
-        align-items: center;
-        gap: 48px;
-        max-width: 1080px;
-        margin: 0 auto;
-    }
-
-    .contact-eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 14px;
-        border: 1px solid rgba(255, 255, 255, .26);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, .12);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: .08em;
-    }
-
-    .contact-hero h1 {
-        max-width: 560px;
-        margin: 20px 0 14px;
-        font-size: clamp(38px, 5vw, 56px);
-        line-height: 1.12;
-        letter-spacing: -.04em;
-    }
-
-    .contact-hero p {
-        max-width: 520px;
-        margin: 0;
-        color: #e0edff;
-        font-size: 16px;
-        line-height: 1.8;
-    }
-
-    .contact-hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 26px;
-    }
-
-    .contact-hero-button {
-        display: inline-flex;
-        min-height: 46px;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        padding: 0 17px;
-        border: 1px solid rgba(255, 255, 255, .38);
-        border-radius: 12px;
-        color: #fff;
-        font-size: 14px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background .2s ease, transform .2s ease;
-    }
-
-    .contact-hero-button:hover {
-        transform: translateY(-2px);
-        background: rgba(255, 255, 255, .12);
-    }
-
-    .contact-hero-button-primary {
-        border-color: #fff;
-        background: #fff;
-        color: #1d4ed8;
-    }
-
-    .contact-hero-button-primary:hover {
-        background: #eff6ff;
-    }
-
-    .contact-hero-art {
-        position: relative;
-        display: grid;
-        min-height: 240px;
-        place-items: center;
-    }
-
-    .contact-orbit {
-        position: absolute;
-        width: 230px;
-        height: 230px;
-        border: 1px solid rgba(255, 255, 255, .28);
-        border-radius: 50%;
-        box-shadow: 0 0 0 24px rgba(255, 255, 255, .04), 0 0 0 48px rgba(255, 255, 255, .035);
-    }
-
-    .contact-visual-card {
-        position: relative;
-        width: min(300px, 100%);
-        padding: 24px;
-        border: 1px solid rgba(255, 255, 255, .3);
-        border-radius: 22px;
-        background: rgba(255, 255, 255, .14);
-        box-shadow: 0 22px 55px rgba(15, 23, 42, .16);
-        backdrop-filter: blur(12px);
-    }
-
-    .contact-visual-icon {
-        display: grid;
-        width: 58px;
-        height: 58px;
-        margin-bottom: 20px;
-        place-items: center;
-        border-radius: 18px;
-        background: #fff;
-        color: #2563eb;
-        font-size: 24px;
-    }
-
-    .contact-visual-card strong {
-        display: block;
-        margin-bottom: 7px;
-        font-size: 19px;
-    }
-
-    .contact-visual-card p {
-        color: #e0edff;
-        font-size: 13px;
-        line-height: 1.6;
-    }
-
-    .contact-float-icon {
-        position: absolute;
-        z-index: 1;
-        display: grid;
-        width: 46px;
-        height: 46px;
-        place-items: center;
-        border: 1px solid rgba(255, 255, 255, .65);
-        border-radius: 15px;
-        background: #fff;
-        color: #2563eb;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, .18);
-        font-size: 18px;
-    }
-
-    .contact-float-email {
-        top: 16px;
-        right: 12px;
-        transform: rotate(9deg);
-    }
-
-    .contact-float-chat {
-        bottom: 12px;
-        left: 8px;
-        transform: rotate(-9deg);
+        padding: 56px 20px 72px;
+        background: #f1f5f9;
+        color: #0f172a;
     }
 
     .contact-container {
-        width: min(1080px, calc(100% - 40px));
-        margin: -54px auto 0;
-        position: relative;
-        z-index: 2;
+        width: min(1080px, 100%);
+        margin: 0 auto;
     }
 
-    .contact-cards {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
+    .contact-heading {
+        max-width: 650px;
+        margin: 0 auto 34px;
+        text-align: center;
     }
 
-    .contact-card {
-        display: flex;
-        gap: 18px;
-        min-height: 190px;
-        padding: 28px;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        background: #fff;
-        box-shadow: 0 14px 36px rgba(15, 23, 42, .08);
-        transition: transform .2s ease, box-shadow .2s ease;
+    .contact-eyebrow {
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
     }
 
-    .contact-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 42px rgba(15, 23, 42, .12);
+    .contact-heading h1 {
+        margin: 10px 0 12px;
+        color: #10244a;
+        font-size: clamp(32px, 5vw, 46px);
+        letter-spacing: -.035em;
     }
 
-    .contact-card-icon {
-        display: grid;
-        flex: 0 0 52px;
-        width: 52px;
-        height: 52px;
-        place-items: center;
-        border-radius: 15px;
-        background: #eff6ff;
-        color: #2563eb;
-        font-size: 20px;
-    }
-
-    .contact-card h2 {
-        margin: 3px 0 8px;
-        color: #0f172a;
-        font-size: 18px;
-    }
-
-    .contact-card p {
-        margin-bottom: 15px;
+    .contact-heading p {
         color: #64748b;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 1.7;
     }
 
-    .contact-card a {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #2563eb;
-        font-size: 15px;
-        font-weight: 700;
-        text-decoration: none;
+    .contact-layout {
+        display: grid;
+        grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+        align-items: start;
+        gap: 22px;
+    }
+
+    .contact-panel {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, .05);
+    }
+
+    .contact-information,
+    .contact-form-panel {
+        padding: clamp(22px, 4vw, 30px);
+    }
+
+    .contact-panel h2 {
+        margin-bottom: 8px;
+        color: #10244a;
+        font-size: 21px;
+    }
+
+    .contact-panel-intro {
+        margin-bottom: 22px;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .contact-info-list {
+        display: grid;
+        gap: 18px;
+    }
+
+    .contact-info-item {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        align-items: start;
+        gap: 13px;
+    }
+
+    .contact-info-icon {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+    .contact-info-item h3 {
+        margin: 1px 0 5px;
+        color: #334155;
+        font-size: 14px;
+    }
+
+    .contact-info-item p,
+    .contact-info-item a {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
         overflow-wrap: anywhere;
     }
 
-    .contact-card a:hover {
+    .contact-info-item a {
         color: #1d4ed8;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .contact-info-item a:hover,
+    .contact-social-link:hover {
         text-decoration: underline;
         text-underline-offset: 3px;
     }
 
-    .contact-card a i {
-        font-size: 12px;
+    .contact-unavailable {
+        color: #94a3b8 !important;
+        font-style: italic;
     }
 
-    .contact-details {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr 1fr;
-        gap: 18px;
-        margin-top: 24px;
-        padding: 26px;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        background: #fff;
+    .contact-socials {
+        margin-top: 25px;
+        padding-top: 21px;
+        border-top: 1px solid #e2e8f0;
     }
 
-    .contact-message-card {
-        margin-top: 24px;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: clamp(20px, 4vw, 30px);
-        background: #fff;
-        box-shadow: 0 14px 36px rgba(15, 23, 42, .08);
-    }
-
-    .contact-message-card h2 {
-        margin-bottom: 7px;
-        color: #0f172a;
-        font-size: 21px;
-    }
-
-    .contact-message-intro {
-        margin-bottom: 20px;
-        color: #64748b;
+    .contact-socials h3 {
+        margin-bottom: 13px;
+        color: #334155;
         font-size: 14px;
-        line-height: 1.6;
     }
 
-    .contact-message-form {
+    .contact-social-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .contact-social-link,
+    .contact-social-unavailable {
+        display: inline-flex;
+        min-height: 38px;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 0 11px;
+        color: #334155;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    .contact-social-link {
+        transition: border-color .2s ease, background .2s ease;
+    }
+
+    .contact-social-link:hover {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        text-decoration: none;
+    }
+
+    .contact-social-unavailable {
+        color: #94a3b8;
+    }
+
+    .contact-alert {
+        margin: 0 0 18px;
+        border: 1px solid #bbf7d0;
+        border-radius: 9px;
+        padding: 12px 14px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .contact-alert.is-error {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .contact-form {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 15px;
+        gap: 16px;
     }
 
-    .contact-message-field {
+    .contact-field {
         display: grid;
         gap: 7px;
         color: #334155;
@@ -321,237 +224,156 @@
         font-weight: 700;
     }
 
-    .contact-message-field-full {
-        grid-column: 1 / -1;
-    }
-
-    .contact-message-field input,
-    .contact-message-field textarea {
+    .contact-field input,
+    .contact-field textarea {
         width: 100%;
         border: 1px solid #cbd5e1;
         border-radius: 9px;
         padding: 11px 12px;
-        outline: 0;
+        outline: none;
         background: #fff;
         color: #0f172a;
         font: inherit;
         font-size: 14px;
         font-weight: 400;
+        transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    .contact-message-field input {
+    .contact-field input {
         min-height: 44px;
     }
 
-    .contact-message-field textarea {
+    .contact-field textarea {
         min-height: 145px;
         resize: vertical;
     }
 
-    .contact-message-field input:focus,
-    .contact-message-field textarea:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+    .contact-field input:focus,
+    .contact-field textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
     }
 
-    .contact-message-submit {
+    .contact-field input[aria-invalid="true"],
+    .contact-field textarea[aria-invalid="true"] {
+        border-color: #dc2626;
+    }
+
+    .contact-field-error {
+        color: #b91c1c;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .contact-message-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .contact-submit {
         display: inline-flex;
-        min-height: 44px;
+        min-height: 46px;
         align-items: center;
         justify-content: center;
         gap: 9px;
         justify-self: start;
         border: 0;
         border-radius: 9px;
-        padding: 0 17px;
-        background: #1d4ed8;
+        padding: 0 18px;
+        background: #10244a;
         color: #fff;
         font: inherit;
         font-size: 14px;
         font-weight: 700;
         cursor: pointer;
+        transition: background .2s ease, transform .2s ease;
     }
 
-    .contact-message-submit:hover {
-        background: #1e40af;
+    .contact-submit:hover {
+        transform: translateY(-1px);
+        background: #1d4ed8;
     }
 
-    .contact-message-alert {
-        margin-bottom: 17px;
-        border: 1px solid #bbf7d0;
-        border-radius: 9px;
-        padding: 12px 14px;
-        background: #f0fdf4;
-        color: #166534;
-        font-size: 13px;
+    .contact-map {
+        margin-top: 22px;
+        padding: clamp(20px, 4vw, 26px);
     }
 
-    .contact-message-alert.is-error {
-        border-color: #fecaca;
-        background: #fef2f2;
-        color: #b91c1c;
-    }
-
-    .contact-detail {
+    .contact-map-header {
         display: flex;
-        gap: 13px;
         align-items: flex-start;
-        padding: 8px;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
     }
 
-    .contact-detail i {
-        margin-top: 3px;
-        color: #2563eb;
-        font-size: 17px;
-    }
-
-    .contact-detail h3 {
-        margin-bottom: 6px;
-        color: #334155;
-        font-size: 13px;
-    }
-
-    .contact-detail p {
+    .contact-map-header p {
         color: #64748b;
         font-size: 14px;
         line-height: 1.6;
     }
 
-    .contact-note {
-        position: relative;
-        display: flex;
-        overflow: hidden;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        margin-top: 24px;
-        padding: 28px 32px;
-        border-radius: 18px;
-        background: linear-gradient(115deg, #102d68, #1d4ed8);
-        color: #fff;
-        box-shadow: 0 16px 36px rgba(37, 99, 235, .18);
-    }
-
-    .contact-note::after {
-        position: absolute;
-        top: -90px;
-        right: 20%;
-        width: 220px;
-        height: 220px;
-        border: 1px solid rgba(255, 255, 255, .13);
-        border-radius: 50%;
-        content: "";
-        pointer-events: none;
-    }
-
-    .contact-note h2 {
-        margin-bottom: 8px;
-        color: #fff;
-        font-size: 21px;
-    }
-
-    .contact-note p {
-        color: #dbeafe;
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .contact-note-link {
-        position: relative;
-        z-index: 1;
-        display: inline-flex;
+    .contact-map-link {
         flex: 0 0 auto;
-        min-height: 44px;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        padding: 0 16px;
-        border-radius: 11px;
-        background: #fff;
         color: #1d4ed8;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         text-decoration: none;
-        transition: background .2s ease, transform .2s ease;
     }
 
-    .contact-note-link:hover {
-        transform: translateY(-2px);
-        background: #eff6ff;
+    .contact-map-link:hover {
+        text-decoration: underline;
     }
 
-    @media (max-width: 700px) {
-        .contact-hero {
-            padding: 58px 20px 94px;
+    .contact-map-frame {
+        display: block;
+        width: 100%;
+        height: 300px;
+        border: 0;
+        border-radius: 11px;
+        background: #e2e8f0;
+    }
+
+    @media (max-width: 760px) {
+        .contact-page {
+            padding: 38px 14px 52px;
         }
 
-        .contact-hero-content {
-            display: block;
-            text-align: center;
+        .contact-heading {
+            margin-bottom: 25px;
         }
 
-        .contact-hero p {
+        .contact-heading p {
             font-size: 14px;
-            margin: 0 auto;
         }
 
-        .contact-hero h1 {
-            font-size: clamp(34px, 9vw, 44px);
-        }
-
-        .contact-hero-actions {
-            justify-content: center;
-            margin-top: 22px;
-        }
-
-        .contact-hero-art {
-            display: none;
-        }
-
-        .contact-container {
-            width: min(100% - 28px, 520px);
-        }
-
-        .contact-cards,
-        .contact-details {
+        .contact-layout {
             grid-template-columns: 1fr;
+            gap: 16px;
         }
 
-        .contact-message-form {
-            grid-template-columns: 1fr;
-        }
-
-        .contact-message-field-full {
-            grid-column: auto;
-        }
-
-        .contact-card {
-            min-height: auto;
-            padding: 23px;
-        }
-
-        .contact-details {
-            gap: 10px;
-            padding: 18px;
-        }
-
-        .contact-note {
-            align-items: flex-start;
+        .contact-map-header {
             flex-direction: column;
-            padding: 25px 22px;
         }
 
-        .contact-detail {
-            padding: 10px 6px;
+        .contact-map-frame {
+            height: 250px;
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .contact-card {
+        .contact-field input,
+        .contact-field textarea,
+        .contact-social-link,
+        .contact-submit {
             transition: none;
         }
 
-        .contact-card:hover {
+        .contact-submit:hover {
             transform: none;
         }
     }
@@ -560,150 +382,237 @@
 
 @section('content')
 <div class="contact-page">
-    <section class="contact-hero">
-        <div class="contact-hero-content">
-            <div class="contact-hero-copy">
-                <span class="contact-eyebrow">
-                    <i class="fa-solid fa-headset" aria-hidden="true"></i>
-                    PUSAT BANTUAN NEXAMARKET
-                </span>
-                <h1>Kami siap membantu</h1>
-                <p>
-                    Kami senang bisa membantu. Pilih cara yang paling nyaman untuk
-                    bertanya tentang produk, pesanan, atau layanan NexaMarket.
-                </p>
-                <div class="contact-hero-actions">
-                    <a class="contact-hero-button contact-hero-button-primary" href="mailto:support@nexamarket.id">
-                        <i class="fa-regular fa-envelope" aria-hidden="true"></i>
-                        Kirim Email
-                    </a>
-                    <a class="contact-hero-button" href="#info-layanan">
-                        Lihat Info Layanan
-                        <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="contact-hero-art" aria-hidden="true">
-                <div class="contact-orbit"></div>
-                <span class="contact-float-icon contact-float-email">
-                    <i class="fa-regular fa-envelope"></i>
-                </span>
-                <span class="contact-float-icon contact-float-chat">
-                    <i class="fa-regular fa-comments"></i>
-                </span>
-                <div class="contact-visual-card">
-                    <span class="contact-visual-icon">
-                        <i class="fa-solid fa-headset"></i>
-                    </span>
-                    <strong>Customer Care</strong>
-                    <p>Teman belanja yang siap membantu kebutuhan Anda.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <div class="contact-container">
-        <section class="contact-cards" aria-label="Cara menghubungi NexaMarket">
-            <article class="contact-card">
-                <div class="contact-card-icon" aria-hidden="true">
-                    <i class="fa-regular fa-envelope"></i>
-                </div>
-                <div>
-                    <h2>Email</h2>
-                    <p>Kirim pertanyaan kapan saja, dan tim kami akan membantu melalui email.</p>
-                    <a href="mailto:support@nexamarket.id">
-                        support@nexamarket.id
-                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </article>
+        <header class="contact-heading">
+            <span class="contact-eyebrow">Layanan pelanggan NexaMarket</span>
+            <h1>Hubungi Kami</h1>
+            <p>
+                Ada pertanyaan tentang produk, pesanan, atau layanan kami?
+                Kirim pesan dan tim NexaMarket akan membantu Anda.
+            </p>
+        </header>
 
-            <article class="contact-card">
-                <div class="contact-card-icon" aria-hidden="true">
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-                <div>
-                    <h2>Telepon</h2>
-                    <p>Ingin berbicara langsung? Hubungi kami pada jam operasional.</p>
-                    <a href="tel:+6281234567890">
-                        +62 812 3456 7890
-                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </article>
-        </section>
+        <div class="contact-layout">
+            <section class="contact-panel contact-information" aria-labelledby="contact-information-title">
+                <h2 id="contact-information-title">Informasi Kontak</h2>
+                <p class="contact-panel-intro">Pilih cara yang paling nyaman untuk menghubungi kami.</p>
 
-        <section class="contact-message-card" aria-labelledby="contact-message-title">
-            <h2 id="contact-message-title">Kirim pesan kepada kami</h2>
-            <p class="contact-message-intro">Isi formulir berikut dan tim NexaMarket akan menghubungi Anda melalui email.</p>
+                <div class="contact-info-list">
+                    <div class="contact-info-item">
+                        <span class="contact-info-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+                        <div>
+                            <h3>Alamat toko</h3>
+                            @if($address !== '')
+                                <p>{{ $address }}</p>
+                            @else
+                                <p class="contact-unavailable">Informasi belum tersedia.</p>
+                            @endif
+                        </div>
+                    </div>
 
-            @if(session('success'))
-                <div class="contact-message-alert" role="status">{{ session('success') }}</div>
-            @endif
-            @if($errors->any())
-                <div class="contact-message-alert is-error" role="alert">{{ $errors->first() }}</div>
-            @endif
+                    <div class="contact-info-item">
+                        <span class="contact-info-icon" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></span>
+                        <div>
+                            <h3>WhatsApp</h3>
+                            @if($whatsapp !== '' && $whatsappDigits !== '')
+                                <a href="https://wa.me/{{ $whatsappDigits }}" target="_blank" rel="noopener noreferrer">{{ $whatsapp }}</a>
+                            @else
+                                <p class="contact-unavailable">Informasi belum tersedia.</p>
+                            @endif
+                        </div>
+                    </div>
 
-            <form class="contact-message-form" action="{{ route('contact.store') }}" method="POST">
-                @csrf
-                <label class="contact-message-field">
-                    Nama
-                    <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}" maxlength="120" autocomplete="name" required>
-                </label>
-                <label class="contact-message-field">
-                    Email
-                    <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}" maxlength="255" autocomplete="email" required>
-                </label>
-                <label class="contact-message-field contact-message-field-full">
-                    Subjek
-                    <input type="text" name="subject" value="{{ old('subject') }}" maxlength="180" required>
-                </label>
-                <label class="contact-message-field contact-message-field-full">
-                    Pesan
-                    <textarea name="body" maxlength="10000" required>{{ old('body') }}</textarea>
-                </label>
-                <button class="contact-message-submit" type="submit">
-                    <i class="fa-regular fa-paper-plane" aria-hidden="true"></i>
-                    Kirim Pesan
-                </button>
-            </form>
-        </section>
+                    <div class="contact-info-item">
+                        <span class="contact-info-icon" aria-hidden="true"><i class="fa-regular fa-envelope"></i></span>
+                        <div>
+                            <h3>Email</h3>
+                            @if($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL))
+                                <a href="mailto:{{ $email }}">{{ $email }}</a>
+                            @else
+                                <p class="contact-unavailable">Informasi belum tersedia.</p>
+                            @endif
+                        </div>
+                    </div>
 
-        <section class="contact-details" id="info-layanan" aria-label="Informasi layanan">
-            <div class="contact-detail">
-                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                <div>
-                    <h3>Lokasi</h3>
-                    <p>Jakarta, Indonesia</p>
+                    <div class="contact-info-item">
+                        <span class="contact-info-icon" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
+                        <div>
+                            <h3>Jam operasional</h3>
+                            @if($hours !== '')
+                                <p>{{ $hours }}</p>
+                            @else
+                                <p class="contact-unavailable">Informasi belum tersedia.</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="contact-detail">
-                <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                <div>
-                    <h3>Jam operasional</h3>
-                    <p>08:00–22:00</p>
-                </div>
-            </div>
-            <div class="contact-detail">
-                <i class="fa-solid fa-message" aria-hidden="true"></i>
-                <div>
-                    <h3>Bantuan</h3>
-                    <p>Informasi produk dan layanan belanja</p>
-                </div>
-            </div>
-        </section>
 
-        <section class="contact-note">
-            <div>
-                <h2>Butuh bantuan untuk pesanan?</h2>
-                <p>Siapkan detail pesanan Anda agar kami dapat membantu dengan lebih mudah.</p>
-            </div>
-            <a class="contact-note-link" href="tel:+6281234567890">
-                <i class="fa-solid fa-phone" aria-hidden="true"></i>
-                Hubungi Kami
-            </a>
-        </section>
+                <div class="contact-socials">
+                    <h3>Media sosial</h3>
+                    <div class="contact-social-list">
+                        @if($instagramUrl)
+                            <a class="contact-social-link" href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands fa-instagram" aria-hidden="true"></i> Instagram
+                            </a>
+                        @else
+                            <span class="contact-social-unavailable"><i class="fa-brands fa-instagram" aria-hidden="true"></i> Instagram</span>
+                        @endif
+
+                        @if($facebookUrl)
+                            <a class="contact-social-link" href="{{ $facebookUrl }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands fa-facebook" aria-hidden="true"></i> Facebook
+                            </a>
+                        @else
+                            <span class="contact-social-unavailable"><i class="fa-brands fa-facebook" aria-hidden="true"></i> Facebook</span>
+                        @endif
+
+                        @if($whatsapp !== '' && $whatsappDigits !== '')
+                            <a class="contact-social-link" href="https://wa.me/{{ $whatsappDigits }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp
+                            </a>
+                        @else
+                            <span class="contact-social-unavailable"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp</span>
+                        @endif
+                    </div>
+                </div>
+            </section>
+
+            <section class="contact-panel contact-form-panel" aria-labelledby="contact-form-title">
+                <h2 id="contact-form-title">Kirim Pesan</h2>
+                <p class="contact-panel-intro">Lengkapi formulir berikut. Semua kolom wajib diisi.</p>
+
+                @if(session('success'))
+                    <div class="contact-alert" role="status">{{ session('success') }}</div>
+                @endif
+                @if($errors->any())
+                    <div class="contact-alert is-error" role="alert">
+                        Pesan belum dapat dikirim. {{ $errors->first() }}
+                    </div>
+                @endif
+
+                <form class="contact-form" action="{{ route('contact.store') }}" method="POST">
+                    @csrf
+
+                    <div class="contact-field">
+                        <label for="contact-name">Nama lengkap</label>
+                        <input
+                            id="contact-name"
+                            type="text"
+                            name="name"
+                            value="{{ old('name', auth()->user()->name) }}"
+                            maxlength="120"
+                            autocomplete="name"
+                            required
+                            aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}"
+                            @if($errors->has('name')) aria-describedby="contact-name-error" @endif
+                        >
+                        @error('name')
+                            <span class="contact-field-error" id="contact-name-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="contact-field">
+                        <label for="contact-email">Email</label>
+                        <input
+                            id="contact-email"
+                            type="email"
+                            name="email"
+                            value="{{ old('email', auth()->user()->email) }}"
+                            maxlength="255"
+                            autocomplete="email"
+                            required
+                            aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
+                            @if($errors->has('email')) aria-describedby="contact-email-error" @endif
+                        >
+                        @error('email')
+                            <span class="contact-field-error" id="contact-email-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="contact-field">
+                        <label for="contact-subject">Subjek pesan</label>
+                        <input
+                            id="contact-subject"
+                            type="text"
+                            name="subject"
+                            value="{{ old('subject') }}"
+                            maxlength="180"
+                            required
+                            aria-invalid="{{ $errors->has('subject') ? 'true' : 'false' }}"
+                            @if($errors->has('subject')) aria-describedby="contact-subject-error" @endif
+                        >
+                        @error('subject')
+                            <span class="contact-field-error" id="contact-subject-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="contact-field">
+                        <label for="contact-message-body">Isi pesan</label>
+                        <textarea
+                            id="contact-message-body"
+                            name="body"
+                            maxlength="10000"
+                            required
+                            aria-invalid="{{ $errors->has('body') ? 'true' : 'false' }}"
+                            @if($errors->has('body')) aria-describedby="contact-body-error" @endif
+                        >{{ old('body') }}</textarea>
+                        <div class="contact-message-meta">
+                            @error('body')
+                                <span class="contact-field-error" id="contact-body-error">{{ $message }}</span>
+                            @else
+                                <span>Maksimal 10.000 karakter</span>
+                            @enderror
+                            <span id="contact-message-count" aria-live="polite">0/10000</span>
+                        </div>
+                    </div>
+
+                    <button class="contact-submit" type="submit">
+                        <i class="fa-regular fa-paper-plane" aria-hidden="true"></i>
+                        Kirim Pesan
+                    </button>
+                </form>
+            </section>
+        </div>
+
+        @if($address !== '')
+            <section class="contact-panel contact-map" aria-labelledby="contact-map-title">
+                <div class="contact-map-header">
+                    <div>
+                        <h2 id="contact-map-title">Lokasi Toko</h2>
+                        <p>{{ $address }}</p>
+                    </div>
+                    <a
+                        class="contact-map-link"
+                        href="https://www.google.com/maps/search/?api=1&amp;query={{ urlencode($address) }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >Buka di Google Maps <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                </div>
+                <iframe
+                    class="contact-map-frame"
+                    title="Peta lokasi toko NexaMarket"
+                    src="https://maps.google.com/maps?q={{ urlencode($address) }}&amp;output=embed"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+            </section>
+        @endif
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const contactMessage = document.getElementById('contact-message-body');
+    const contactMessageCount = document.getElementById('contact-message-count');
+
+    if (contactMessage && contactMessageCount) {
+        const updateContactMessageCount = () => {
+            contactMessageCount.textContent = `${contactMessage.value.length}/${contactMessage.maxLength}`;
+        };
+
+        contactMessage.addEventListener('input', updateContactMessageCount);
+        updateContactMessageCount();
+    }
+</script>
+@endpush

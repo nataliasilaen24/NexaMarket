@@ -36,6 +36,14 @@
                 <i class="fa-solid fa-envelope" aria-hidden="true"></i>
                 Kontak
             </a>
+            <a
+                class="admin-sidebar-link {{ request()->routeIs('admin.chats.*') ? 'is-active' : '' }}"
+                href="{{ route('admin.chats.index') }}"
+                @if(request()->routeIs('admin.chats.*')) aria-current="page" @endif
+            >
+                <i class="fa-regular fa-comments" aria-hidden="true"></i>
+                Live Chat
+            </a>
         </nav>
     </div>
 

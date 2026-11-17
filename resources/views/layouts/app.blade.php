@@ -48,6 +48,12 @@
         @yield('content')
     </main>
 
+    @auth
+        @unless(request()->routeIs('admin.*'))
+            @include('partials.chat-widget')
+        @endunless
+    @endauth
+
     <!-- JavaScript tambahan -->
     @stack('scripts')
 
