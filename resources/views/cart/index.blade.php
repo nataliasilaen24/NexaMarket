@@ -414,7 +414,7 @@
 
                             <div class="product-image-wrap">
                                 @if(!empty($item['image']))
-                                    <img class="product-image" src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}">
+                                    <img class="product-image" src="{{ \App\Models\Product::imageUrlFor($item['image']) }}" alt="{{ $item['name'] }}">
                                 @else
                                     <div class="placeholder-image">🛍️</div>
                                 @endif

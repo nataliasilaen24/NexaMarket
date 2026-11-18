@@ -54,6 +54,33 @@ class CheckoutTest extends TestCase
         $this->assertSame($cart, session('cart'));
     }
 
+    public function test_checkout_and_confirmation_display_public_product_images(): void
+    {
+        [$product] = $this->createProducts();
+        $product->update(['image' => 'images/products/zia-cargo-pants-wanita.jpg']);
+        $this->withSession([
+            'cart' => [$product->id => $this->cartItem($product, 1)],
+            'checkout_items' => [(string) $product->id],
+        ]);
+
+        $this->get(route('checkout.index'))
+            ->assertOk()
+            ->assertSee('src="/images/products/zia-cargo-pants-wanita.jpg"', false);
+
+        $this->post(route('checkout.place'), [
+            'recipient_name' => 'Ayu Silaen',
+            'phone' => '081234567890',
+            'address' => 'Dusun Nadeak, Silaen',
+            'shipping_method' => 'hemat',
+            'payment_method' => 'cod',
+        ])->assertRedirect();
+
+        $order = Order::firstOrFail();
+        $this->get(route('checkout.confirmation', $order->order_number))
+            ->assertOk()
+            ->assertSee('src="/images/products/zia-cargo-pants-wanita.jpg"', false);
+    }
+
     public function test_checkout_requires_at_least_one_selected_product(): void
     {
         $this->withSession(['cart' => [1 => ['name' => 'Produk', 'quantity' => 1, 'price' => 1000]]])

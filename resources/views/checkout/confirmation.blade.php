@@ -401,7 +401,7 @@
                             @if($item->product_image)
                                 <img
                                     class="confirmation-item-image"
-                                    src="{{ asset('storage/' . $item->product_image) }}"
+                                    src="{{ \App\Models\Product::imageUrlFor($item->product_image) }}"
                                     alt="{{ $item->product_name }}"
                                 >
                             @else

@@ -526,7 +526,7 @@
             @foreach($items as $item)
                 <article class="checkout-product">
                     @if($item['image'])
-                        <img class="checkout-product-image" src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}">
+                        <img class="checkout-product-image" src="{{ \App\Models\Product::imageUrlFor($item['image']) }}" alt="{{ $item['name'] }}">
                     @else
                         <div class="checkout-product-image" aria-hidden="true"></div>
                     @endif

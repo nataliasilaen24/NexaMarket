@@ -537,7 +537,7 @@
             @forelse($promoProducts as $promoProduct)
                 <a class="promo-teaser-card" href="{{ route('products.show', $promoProduct) }}">
                     @if($promoProduct->image)
-                        <img src="{{ asset('storage/' . $promoProduct->image) }}" alt="{{ $promoProduct->name }}">
+                        <img src="{{ $promoProduct->image_url }}" alt="{{ $promoProduct->name }}">
                     @else
                         <div class="product-img" style="display:grid;place-items:center;color:#94a3b8">Tanpa Foto</div>
                     @endif

@@ -31,6 +31,26 @@ class CustomerCatalogTest extends TestCase
             ->assertDontSee('Hapus');
     }
 
+    public function test_shop_uses_host_relative_urls_for_product_images(): void
+    {
+        $publicAssetProduct = $this->createProduct();
+        $publicAssetProduct->update(['image' => 'images/products/kulot-cewek-linen-celana.jpg']);
+
+        $uploadedImageProduct = Product::create([
+            'category_id' => $publicAssetProduct->category_id,
+            'name' => 'Produk Gambar Unggahan',
+            'slug' => 'produk-gambar-unggahan',
+            'price' => 50000,
+            'stock' => 5,
+        ]);
+        $uploadedImageProduct->update(['image' => 'products/uploaded-product.jpg']);
+
+        $this->get(route('shop'))
+            ->assertOk()
+            ->assertSee('src="/images/products/kulot-cewek-linen-celana.jpg"', false)
+            ->assertSee('src="/storage/products/uploaded-product.jpg"', false);
+    }
+
     public function test_inactive_products_are_hidden_from_the_store_and_cannot_be_added_to_cart(): void
     {
         $product = $this->createProduct();

@@ -33,6 +33,27 @@ class CartTest extends TestCase
         $this->assertSame(5, session('cart')[$product->id]['quantity']);
     }
 
+    public function test_cart_displays_public_product_images_from_their_correct_path(): void
+    {
+        $product = $this->createProduct(stock: 8);
+        $product->update(['image' => 'images/products/zia-cargo-pants-wanita.jpg']);
+        $this->withSession([
+            'cart' => [
+                $product->id => [
+                    'name' => $product->name,
+                    'quantity' => 1,
+                    'price' => $product->price,
+                    'image' => $product->image,
+                ],
+            ],
+        ]);
+
+        $this->get(route('cart.index'))
+            ->assertOk()
+            ->assertSee('src="/images/products/zia-cargo-pants-wanita.jpg"', false)
+            ->assertDontSee('src="/storage/images/products/zia-cargo-pants-wanita.jpg"', false);
+    }
+
     public function test_cart_refreshes_and_displays_the_active_promo_price(): void
     {
         $product = $this->createProduct(stock: 8);

@@ -44,16 +44,23 @@ class Product extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        if (! $this->image) {
+        return static::imageUrlFor($this->image);
+    }
+
+    public static function imageUrlFor(?string $image): ?string
+    {
+        if (! $image) {
             return null;
         }
 
-        $imagePath = ltrim($this->image, '/');
+        $imagePath = ltrim($image, '/');
         $isPublicAsset = str_starts_with($imagePath, 'images/');
-        $path = $isPublicAsset ? $imagePath : 'storage/'.$imagePath;
+        $path = $isPublicAsset || str_starts_with($imagePath, 'storage/')
+            ? $imagePath
+            : 'storage/'.$imagePath;
         $encodedPath = implode('/', array_map('rawurlencode', explode('/', $path)));
 
-        return asset($encodedPath);
+        return '/'.$encodedPath;
     }
 
     public function category(): BelongsTo
