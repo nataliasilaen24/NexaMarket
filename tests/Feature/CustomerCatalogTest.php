@@ -31,6 +31,35 @@ class CustomerCatalogTest extends TestCase
             ->assertDontSee('Hapus');
     }
 
+    public function test_product_detail_uses_real_product_information_instead_of_fake_reviews(): void
+    {
+        $product = $this->createProduct();
+
+        $this->get(route('products.show', $product))
+            ->assertOk()
+            ->assertSee($product->name)
+            ->assertSee('Pakaian')
+            ->assertSee('5 unit tersedia')
+            ->assertSee('Tambah ke Keranjang')
+            ->assertDontSee('4.9 (2.4rb ulasan)')
+            ->assertDontSee('Produk Terbaru');
+    }
+
+    public function test_product_detail_does_not_show_a_promo_when_promo_price_is_missing(): void
+    {
+        $product = $this->createProduct();
+        $product->update([
+            'is_promo' => true,
+            'promo_price' => null,
+        ]);
+
+        $this->get(route('products.show', $product))
+            ->assertOk()
+            ->assertSee('Rp 50.000')
+            ->assertDontSee('PROMO')
+            ->assertDontSee('Hemat');
+    }
+
     public function test_shop_uses_host_relative_urls_for_product_images(): void
     {
         $publicAssetProduct = $this->createProduct();
@@ -90,6 +119,35 @@ class CustomerCatalogTest extends TestCase
 
         foreach ($productNames as $name) {
             $response->assertSee($name);
+        }
+    }
+
+    public function test_customer_search_finds_products_case_insensitively(): void
+    {
+        $category = Category::create([
+            'name' => 'Pakaian',
+            'slug' => 'pakaian',
+        ]);
+        $jeans = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Celana Jeans',
+            'slug' => 'celana-jeans',
+            'price' => 50000,
+            'stock' => 5,
+        ]);
+        $unrelatedProduct = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Kaos Polos',
+            'slug' => 'kaos-polos',
+            'price' => 40000,
+            'stock' => 5,
+        ]);
+
+        foreach (['home', 'shop'] as $route) {
+            $this->get(route($route, ['search' => 'jeans']))
+                ->assertOk()
+                ->assertSee($jeans->name)
+                ->assertDontSee($unrelatedProduct->name);
         }
     }
 

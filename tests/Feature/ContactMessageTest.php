@@ -17,7 +17,7 @@ class ContactMessageTest extends TestCase
     {
         config([
             'contact.address' => 'Jl. Contoh 10, Bandung',
-            'contact.whatsapp' => '+62 812 3456 7890',
+            'contact.whatsapp' => '0812 3456 7890',
             'contact.email' => 'halo@nexamarket.example',
             'contact.hours' => 'Senin–Jumat, 09.00–17.00',
             'contact.instagram' => 'https://instagram.com/nexamarket',
@@ -30,11 +30,12 @@ class ContactMessageTest extends TestCase
         $response->assertOk()
             ->assertSee('Hubungi Kami')
             ->assertSee('Jl. Contoh 10, Bandung')
-            ->assertSee('+62 812 3456 7890')
+            ->assertSee('0812 3456 7890')
+            ->assertSee('href="https://wa.me/6281234567890"', false)
             ->assertSee('halo@nexamarket.example')
             ->assertSee('Senin–Jumat, 09.00–17.00')
-            ->assertSee('https://instagram.com/nexamarket')
-            ->assertSee('https://facebook.com/nexamarket')
+            ->assertSee('href="https://instagram.com/nexamarket"', false)
+            ->assertSee('href="https://facebook.com/nexamarket"', false)
             ->assertSee('maps.google.com/maps?q=Jl.+Contoh+10%2C+Bandung&amp;output=embed', false);
     }
 

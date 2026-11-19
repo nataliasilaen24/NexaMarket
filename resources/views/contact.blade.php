@@ -6,6 +6,9 @@
     $address = trim((string) config('contact.address', ''));
     $whatsapp = trim((string) config('contact.whatsapp', ''));
     $whatsappDigits = preg_replace('/\D+/', '', $whatsapp) ?? '';
+    if (str_starts_with($whatsappDigits, '0')) {
+        $whatsappDigits = '62'.substr($whatsappDigits, 1);
+    }
     $email = trim((string) config('contact.email', ''));
     $hours = trim((string) config('contact.hours', ''));
     $instagram = config('contact.instagram');

@@ -21,11 +21,13 @@ class ProductController extends Controller
         $products = Product::with('category')
             ->where('is_active', true)
             ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'ilike', '%'.$search.'%')
-                        ->orWhere('description', 'ilike', '%'.$search.'%')
-                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                            $categoryQuery->where('name', 'ilike', '%'.$search.'%');
+                $searchPattern = '%'.Str::lower($search).'%';
+
+                $query->where(function ($q) use ($searchPattern) {
+                    $q->whereRaw('LOWER(name) LIKE ?', [$searchPattern])
+                        ->orWhereRaw('LOWER(description) LIKE ?', [$searchPattern])
+                        ->orWhereHas('category', function ($categoryQuery) use ($searchPattern) {
+                            $categoryQuery->whereRaw('LOWER(name) LIKE ?', [$searchPattern]);
                         });
                 });
             })
@@ -55,11 +57,13 @@ class ProductController extends Controller
         $products = Product::with('category')
             ->where('is_active', true)
             ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'ilike', '%'.$search.'%')
-                        ->orWhere('description', 'ilike', '%'.$search.'%')
-                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                            $categoryQuery->where('name', 'ilike', '%'.$search.'%');
+                $searchPattern = '%'.Str::lower($search).'%';
+
+                $query->where(function ($q) use ($searchPattern) {
+                    $q->whereRaw('LOWER(name) LIKE ?', [$searchPattern])
+                        ->orWhereRaw('LOWER(description) LIKE ?', [$searchPattern])
+                        ->orWhereHas('category', function ($categoryQuery) use ($searchPattern) {
+                            $categoryQuery->whereRaw('LOWER(name) LIKE ?', [$searchPattern]);
                         });
                 });
             })
@@ -90,10 +94,12 @@ class ProductController extends Controller
             ->whereColumn('promo_price', '<', 'price')
             ->where('stock', '>', 0)
             ->when($search, function ($query, $search) {
-                $query->where(function ($productQuery) use ($search) {
+                $searchPattern = '%'.Str::lower($search).'%';
+
+                $query->where(function ($productQuery) use ($searchPattern) {
                     $productQuery
-                        ->where('name', 'ilike', '%'.$search.'%')
-                        ->orWhere('description', 'ilike', '%'.$search.'%');
+                        ->whereRaw('LOWER(name) LIKE ?', [$searchPattern])
+                        ->orWhereRaw('LOWER(description) LIKE ?', [$searchPattern]);
                 });
             })
             ->latest()
