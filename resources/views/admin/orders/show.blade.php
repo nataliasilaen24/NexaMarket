@@ -136,6 +136,36 @@
         border-bottom: 0;
     }
 
+    .admin-order-item-product {
+        display: flex;
+        min-width: 220px;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .admin-order-item-image,
+    .admin-order-item-placeholder {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        object-fit: cover;
+    }
+
+    .admin-order-item-placeholder {
+        display: grid;
+        place-items: center;
+        color: #94a3b8;
+    }
+
+    .admin-order-item-name {
+        color: #334155;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
     .admin-order-items-total {
         color: #172554 !important;
         font-weight: 700;
@@ -339,7 +369,22 @@
                         <tbody>
                             @foreach($order->items as $item)
                                 <tr>
-                                    <td>{{ $item->product_name }}</td>
+                                    <td>
+                                        <div class="admin-order-item-product">
+                                            @if($item->product_image)
+                                                <img
+                                                    class="admin-order-item-image"
+                                                    src="{{ \App\Models\Product::imageUrlFor($item->product_image) }}"
+                                                    alt="{{ $item->product_name }}"
+                                                >
+                                            @else
+                                                <span class="admin-order-item-placeholder" aria-label="Gambar tidak tersedia">
+                                                    <i class="fa-solid fa-image" aria-hidden="true"></i>
+                                                </span>
+                                            @endif
+                                            <span class="admin-order-item-name">{{ $item->product_name }}</span>
+                                        </div>
+                                    </td>
                                     <td>Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
                                     <td>{{ number_format($item->quantity, 0, ',', '.') }}</td>
                                     <td class="admin-order-items-total">Rp {{ number_format($item->line_total, 0, ',', '.') }}</td>

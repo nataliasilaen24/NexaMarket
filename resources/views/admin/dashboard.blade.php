@@ -413,7 +413,15 @@
                             <tr>
                                 <td class="admin-dashboard-order-number">{{ $order->order_number }}</td>
                                 <td>{{ $order->user->name ?? $order->recipient_name }}</td>
-                                <td>{{ ucfirst($order->status) }}</td>
+                                <td>
+                                    {{ [
+                                        'pending' => 'Menunggu Pembayaran',
+                                        'processing' => 'Diproses',
+                                        'shipped' => 'Dikirim',
+                                        'delivered' => 'Selesai',
+                                        'cancelled' => 'Dibatalkan',
+                                    ][$order->status] ?? ucfirst($order->status) }}
+                                </td>
                                 <td>Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                             </tr>
                         @empty
@@ -548,6 +556,14 @@
                 r: 4,
                 class: 'admin-sales-dot'
             });
+            if (point.value > 0) {
+                addSvgElement('text', {
+                    x: point.x,
+                    y: point.y - 10,
+                    'text-anchor': 'middle',
+                    class: 'admin-sales-axis-label'
+                }, formatCurrency.format(point.value));
+            }
             addSvgElement('text', {
                 x: point.x,
                 y: height - 12,

@@ -67,7 +67,7 @@ class AdminController extends Controller
         $search = trim($validated['search'] ?? '');
         $status = $validated['status'] ?? '';
 
-        $query = Order::with('user')
+        $query = Order::with(['user', 'items'])
             ->withCount('items')
             ->when($search !== '', function ($query) use ($search) {
                 $pattern = '%'.strtolower($search).'%';

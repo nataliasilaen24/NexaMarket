@@ -169,6 +169,55 @@
         white-space: nowrap;
     }
 
+    .admin-order-products {
+        display: grid;
+        min-width: 180px;
+        gap: 7px;
+    }
+
+    .admin-order-product {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .admin-order-product-image,
+    .admin-order-product-placeholder {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border: 1px solid #e2e8f0;
+        border-radius: 7px;
+        background: #f8fafc;
+        object-fit: cover;
+    }
+
+    .admin-order-product-placeholder {
+        display: grid;
+        place-items: center;
+        color: #94a3b8;
+    }
+
+    .admin-order-product-info {
+        min-width: 0;
+    }
+
+    .admin-order-product-name {
+        display: block;
+        max-width: 160px;
+        overflow: hidden;
+        color: #334155;
+        font-size: 11px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .admin-order-product-quantity {
+        color: #94a3b8;
+        font-size: 10px;
+    }
+
     .admin-payment-status {
         display: inline-flex;
         border-radius: 999px;
@@ -385,7 +434,32 @@
                                     <span class="admin-order-email">{{ $order->user->email }}</span>
                                 @endif
                             </td>
-                            <td>{{ $order->items_count }}</td>
+                            <td>
+                                <div class="admin-order-products">
+                                    @foreach($order->items->take(2) as $item)
+                                        <div class="admin-order-product">
+                                            @if($item->product_image)
+                                                <img
+                                                    class="admin-order-product-image"
+                                                    src="{{ \App\Models\Product::imageUrlFor($item->product_image) }}"
+                                                    alt="{{ $item->product_name }}"
+                                                >
+                                            @else
+                                                <span class="admin-order-product-placeholder" aria-label="Gambar tidak tersedia">
+                                                    <i class="fa-solid fa-image" aria-hidden="true"></i>
+                                                </span>
+                                            @endif
+                                            <span class="admin-order-product-info">
+                                                <span class="admin-order-product-name">{{ $item->product_name }}</span>
+                                                <span class="admin-order-product-quantity">{{ $item->quantity }} barang</span>
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                    @if($order->items->count() > 2)
+                                        <span class="admin-order-product-quantity">+{{ $order->items->count() - 2 }} produk lainnya</span>
+                                    @endif
+                                </div>
+                            </td>
                             <td class="admin-order-total">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                             <td>
                                 <span class="admin-payment-status {{ $order->payment_status === 'paid' ? 'is-paid' : ($order->payment_status === 'failed' ? 'is-failed' : '') }}">
