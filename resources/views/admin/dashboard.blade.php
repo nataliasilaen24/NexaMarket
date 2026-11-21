@@ -10,50 +10,132 @@
     }
 
     .admin-dashboard-heading {
-        margin-bottom: 23px;
+        position: relative;
+        display: flex;
+        min-height: 172px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        border-radius: 18px;
+        padding: 28px clamp(22px, 4vw, 40px);
+        background:
+            radial-gradient(circle at 87% 20%, rgba(96, 165, 250, .25), transparent 25%),
+            linear-gradient(115deg, #102448 0%, #173d72 62%, #1d4ed8 100%);
+        box-shadow: 0 14px 32px rgba(16, 36, 72, .16);
     }
 
     .admin-dashboard-heading h1 {
-        margin-bottom: 7px;
-        color: #102448;
-        font-size: clamp(25px, 4vw, 33px);
-        letter-spacing: -.035em;
+        margin: 12px 0 7px;
+        color: #fff;
+        font-size: clamp(27px, 4vw, 36px);
+        letter-spacing: -.04em;
     }
 
     .admin-dashboard-heading p {
-        color: #64748b;
+        max-width: 470px;
+        color: #d7e5fb;
         font-size: 14px;
         line-height: 1.6;
+    }
+
+    .admin-dashboard-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(219, 234, 254, .22);
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, .09);
+        color: #dbeafe;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+
+    .admin-dashboard-eyebrow i {
+        color: #86efac;
+        font-size: 8px;
+    }
+
+    .admin-dashboard-heading-action {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        min-height: 42px;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border: 1px solid rgba(255, 255, 255, .26);
+        border-radius: 10px;
+        padding: 0 14px;
+        background: rgba(255, 255, 255, .12);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s ease, transform .2s ease;
+    }
+
+    .admin-dashboard-heading-action:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, .2);
     }
 
     .admin-dashboard-stats {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 13px;
-        margin-bottom: 20px;
+        gap: 14px;
+        margin-bottom: 18px;
     }
 
     .admin-dashboard-stat {
+        position: relative;
         display: flex;
-        min-height: 88px;
+        min-height: 112px;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
+        overflow: hidden;
         border: 1px solid #e2e8f0;
-        border-radius: 11px;
-        padding: 14px;
-        background: #fff;
-        box-shadow: 0 5px 16px rgba(15, 23, 42, .03);
+        border-radius: 14px;
+        padding: 18px;
+        background: linear-gradient(145deg, #fff, #fbfdff);
+        box-shadow: 0 7px 20px rgba(15, 23, 42, .04);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .admin-dashboard-stat::after {
+        position: absolute;
+        right: -24px;
+        bottom: -34px;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: #eff6ff;
+        content: "";
+        opacity: .8;
+    }
+
+    .admin-dashboard-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, .08);
     }
 
     .admin-dashboard-stat-icon {
+        position: relative;
+        z-index: 1;
         display: grid;
-        width: 41px;
-        height: 41px;
-        flex: 0 0 41px;
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
         place-items: center;
-        border-radius: 10px;
-        background: #eff6ff;
+        border-radius: 13px;
+        background: #eaf2ff;
         color: #1d4ed8;
+        font-size: 18px;
     }
 
     .admin-dashboard-stat.is-green .admin-dashboard-stat-icon {
@@ -61,9 +143,26 @@
         color: #15803d;
     }
 
+    .admin-dashboard-stat.is-green::after {
+        background: #ecfdf5;
+    }
+
+    .admin-dashboard-stat.is-amber .admin-dashboard-stat-icon {
+        background: #fff7ed;
+        color: #c2410c;
+    }
+
+    .admin-dashboard-stat.is-amber::after {
+        background: #fff7ed;
+    }
+
     .admin-dashboard-stat.is-violet .admin-dashboard-stat-icon {
         background: #f5f3ff;
         color: #6d28d9;
+    }
+
+    .admin-dashboard-stat.is-violet::after {
+        background: #f5f3ff;
     }
 
     .admin-dashboard-stat span,
@@ -74,19 +173,20 @@
     .admin-dashboard-stat span {
         margin-bottom: 5px;
         color: #64748b;
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .admin-dashboard-stat strong {
         color: #102448;
-        font-size: 21px;
+        font-size: 25px;
+        letter-spacing: -.04em;
     }
 
     .admin-dashboard-panel {
         min-width: 0;
         overflow: hidden;
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
+        border-radius: 14px;
         background: #fff;
         box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
     }
@@ -96,13 +196,13 @@
         align-items: center;
         justify-content: space-between;
         gap: 14px;
-        padding: 16px 18px;
+        padding: 17px 19px;
         border-bottom: 1px solid #e9eef5;
     }
 
     .admin-dashboard-panel-heading h2 {
         color: #172554;
-        font-size: 15px;
+        font-size: 14px;
     }
 
     .admin-dashboard-panel-heading p {
@@ -112,6 +212,9 @@
     }
 
     .admin-dashboard-panel-heading a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
         color: #1d4ed8;
         font-size: 12px;
         font-weight: 700;
@@ -119,14 +222,18 @@
         white-space: nowrap;
     }
 
+    .admin-dashboard-panel-heading a:hover {
+        color: #1e40af;
+    }
+
     .admin-sales-chart-wrap {
-        padding: 14px 14px 8px;
+        padding: 18px 18px 10px;
     }
 
     .admin-sales-chart {
         display: block;
         width: 100%;
-        min-height: 220px;
+        min-height: 240px;
         overflow: visible;
     }
 
@@ -175,7 +282,7 @@
 
     .admin-dashboard-table th,
     .admin-dashboard-table td {
-        padding: 12px 15px;
+        padding: 13px 15px;
         border-bottom: 1px solid #edf2f7;
         color: #475569;
         font-size: 12px;
@@ -194,10 +301,47 @@
         border-bottom: 0;
     }
 
+    .admin-dashboard-table tbody tr:not(:last-child):hover {
+        background: #f8fbff;
+    }
+
     .admin-dashboard-order-number,
     .admin-low-stock-name {
         color: #172554;
         font-weight: 700;
+    }
+
+    .admin-order-status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .admin-order-status.is-pending {
+        background: #fff7ed;
+        color: #c2410c;
+    }
+
+    .admin-order-status.is-processing,
+    .admin-order-status.is-shipped {
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+    .admin-order-status.is-delivered {
+        background: #ecfdf5;
+        color: #15803d;
+    }
+
+    .admin-order-status.is-cancelled {
+        background: #fef2f2;
+        color: #b91c1c;
     }
 
     .admin-dashboard-empty {
@@ -218,6 +362,11 @@
         border-bottom: 1px solid #edf2f7;
         color: #475569;
         text-decoration: none;
+        transition: background .18s ease;
+    }
+
+    .admin-low-stock-item:hover {
+        background: #f8fbff;
     }
 
     .admin-low-stock-item:last-child {
@@ -284,21 +433,25 @@
 
     .admin-dashboard-shortcut {
         display: inline-flex;
-        min-height: 38px;
+        min-height: 40px;
         align-items: center;
         gap: 8px;
-        border: 1px solid #dbeafe;
-        border-radius: 8px;
+        border: 1px solid #dce7f5;
+        border-radius: 9px;
         padding: 0 11px;
         background: #fff;
-        color: #1d4ed8;
+        color: #334155;
         font-size: 11px;
         font-weight: 700;
         text-decoration: none;
+        transition: border-color .2s ease, background .2s ease, transform .2s ease;
     }
 
     .admin-dashboard-shortcut:hover {
+        transform: translateY(-1px);
+        border-color: #bfdbfe;
         background: #eff6ff;
+        color: #1d4ed8;
     }
 
     @media (max-width: 1100px) {
@@ -312,18 +465,30 @@
     }
 
     @media (max-width: 560px) {
+        .admin-dashboard-heading {
+            min-height: 0;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 18px;
+            padding: 23px 20px;
+        }
+
+        .admin-dashboard-heading-action {
+            min-height: 39px;
+        }
+
         .admin-dashboard-stats {
             grid-template-columns: 1fr;
             gap: 9px;
         }
 
         .admin-dashboard-stat {
-            min-height: 74px;
-            padding: 12px;
+            min-height: 82px;
+            padding: 13px;
         }
 
         .admin-dashboard-panel-heading {
-            padding: 14px;
+            padding: 14px 13px;
         }
 
         .admin-dashboard-table {
@@ -336,8 +501,17 @@
 @section('admin-content')
 <section class="admin-dashboard">
     <header class="admin-dashboard-heading">
-        <h1>Dashboard Admin</h1>
-        <p>Ringkasan aktivitas dan pengelolaan toko NexaMarket.</p>
+        <div>
+            <span class="admin-dashboard-eyebrow">
+                <i class="fa-solid fa-circle" aria-hidden="true"></i> Pusat kendali toko
+            </span>
+            <h1>Dashboard Admin</h1>
+            <p>Pantau aktivitas dan kelola toko NexaMarket dari satu tempat.</p>
+        </div>
+        <a class="admin-dashboard-heading-action" href="{{ route('admin.products.index') }}">
+            <i class="fa-solid fa-box-open" aria-hidden="true"></i> Kelola produk
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
     </header>
 
     <div class="admin-dashboard-stats" aria-label="Ringkasan toko">
@@ -355,7 +529,7 @@
                 <strong>{{ number_format($summary['categories'], 0, ',', '.') }}</strong>
             </div>
         </article>
-        <article class="admin-dashboard-stat">
+        <article class="admin-dashboard-stat is-amber">
             <span class="admin-dashboard-stat-icon"><i class="fa-solid fa-receipt" aria-hidden="true"></i></span>
             <div>
                 <span>Total Pesanan</span>
@@ -414,6 +588,7 @@
                                 <td class="admin-dashboard-order-number">{{ $order->order_number }}</td>
                                 <td>{{ $order->user->name ?? $order->recipient_name }}</td>
                                 <td>
+                                    <span class="admin-order-status is-{{ $order->status }}">
                                     {{ [
                                         'pending' => 'Menunggu Pembayaran',
                                         'processing' => 'Diproses',
@@ -421,6 +596,7 @@
                                         'delivered' => 'Selesai',
                                         'cancelled' => 'Dibatalkan',
                                     ][$order->status] ?? ucfirst($order->status) }}
+                                    </span>
                                 </td>
                                 <td>Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                             </tr>

@@ -47,6 +47,8 @@ class CheckoutTest extends TestCase
             ->assertSee('name="quantities['.$selectedProduct->id.']"', false)
             ->assertSee('id="order-confirmation-dialog"', false)
             ->assertSee('id="confirm-place-order"', false)
+            ->assertSee('name="customer_note"', false)
+            ->assertSee('Catatan pesanan (opsional)')
             ->assertSee('QRIS belum diaktifkan')
             ->assertSee('border-color: #2563eb', false)
             ->assertDontSee('Kembali ke keranjang');
@@ -106,12 +108,14 @@ class CheckoutTest extends TestCase
             'recipient_name' => 'Ayu Silaen',
             'phone' => '081234567890',
             'address' => 'Dusun Nadeak, Silaen',
+            'customer_note' => 'Mohon antar sore hari.',
             'shipping_method' => 'reguler',
             'payment_method' => 'cod',
         ])->assertRedirect();
 
         $order = Order::with('items')->firstOrFail();
         $this->assertSame('cod', $order->payment_method);
+        $this->assertSame('Mohon antar sore hari.', $order->customer_note);
         $this->assertSame(8000, $order->shipping_cost);
         $this->assertEquals(68000, $order->total);
         $this->assertCount(1, $order->items);
@@ -126,6 +130,11 @@ class CheckoutTest extends TestCase
             'address' => 'Dusun Nadeak, Silaen',
         ], session('shipping_address'));
         $this->assertSame((int) auth()->id(), (int) $order->user_id);
+
+        $this->get(route('checkout.confirmation', $order->order_number))
+            ->assertOk()
+            ->assertSee('Catatan pesanan')
+            ->assertSee('Mohon antar sore hari.');
 
         $this->post(route('checkout.start'), ['items' => [$otherProduct->id]])
             ->assertRedirect(route('checkout.index'));

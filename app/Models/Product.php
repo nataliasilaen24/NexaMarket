@@ -7,10 +7,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
 {
+    public const ORIGIN_CITIES = [
+        'Jakarta',
+        'Bandung',
+        'Surabaya',
+        'Yogyakarta',
+        'Semarang',
+        'Medan',
+        'Makassar',
+        'Denpasar',
+        'Palembang',
+        'Malang',
+        'Solo',
+        'Balikpapan',
+    ];
+
     protected $fillable = [
         'category_id',
         'name',
         'slug',
+        'origin_city',
         'description',
         'price',
         'image',

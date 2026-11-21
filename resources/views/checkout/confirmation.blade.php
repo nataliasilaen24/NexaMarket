@@ -160,6 +160,22 @@
         color: #334155;
     }
 
+    .confirmation-order-note {
+        display: grid;
+        gap: 5px;
+        margin-top: 8px;
+        border-radius: 9px;
+        padding: 11px 12px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: .9rem;
+        white-space: pre-line;
+    }
+
+    .confirmation-order-note strong {
+        color: #334155;
+    }
+
     .payment-status {
         display: inline-flex;
         margin-bottom: 16px;
@@ -424,6 +440,12 @@
                     <span>{{ $order->phone }}</span>
                     <span>{{ $order->address }}</span>
                     <span>Pengiriman {{ $shippingLabel }}</span>
+                    @if(filled($order->customer_note))
+                        <div class="confirmation-order-note">
+                            <strong>Catatan pesanan</strong>
+                            <span>{{ $order->customer_note }}</span>
+                        </div>
+                    @endif
                 </div>
             </section>
         </div>

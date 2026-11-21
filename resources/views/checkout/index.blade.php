@@ -517,6 +517,16 @@
                     Alamat lengkap
                     <textarea id="recipient-address" name="address" maxlength="1000" autocomplete="street-address" required>{{ old('address', $shippingAddress['address'] ?? '') }}</textarea>
                 </label>
+                <label class="checkout-field full">
+                    Catatan pesanan (opsional)
+                    <textarea
+                        id="customer-note"
+                        name="customer_note"
+                        maxlength="1000"
+                        rows="3"
+                        placeholder="Contoh: titip ke satpam atau hubungi sebelum mengantar"
+                    >{{ old('customer_note') }}</textarea>
+                </label>
             </div>
             <p class="address-save-note">Alamat ini akan tersimpan untuk checkout berikutnya. Anda bisa mengubahnya kapan saja.</p>
         </section>

@@ -27,6 +27,7 @@ class AdminProductManagementTest extends TestCase
         $this->post(route('admin.products.store'), [
             'name' => 'Kaos Tes',
             'category_id' => $category->id,
+            'origin_city' => 'Bandung',
             'price' => 50000,
             'stock' => 5,
             'description' => 'Kaos nyaman',
@@ -37,6 +38,7 @@ class AdminProductManagementTest extends TestCase
         $this->assertDatabaseHas('products', [
             'id' => $createdProduct->id,
             'category_id' => $category->id,
+            'origin_city' => 'Bandung',
             'name' => 'Kaos Tes',
             'price' => 50000,
             'stock' => 5,
@@ -55,6 +57,7 @@ class AdminProductManagementTest extends TestCase
         $this->put(route('admin.products.update', $createdProduct), [
             'name' => 'Kaos Baru',
             'category_id' => $category->id,
+            'origin_city' => 'Yogyakarta',
             'price' => 60000,
             'stock' => 8,
             'description' => 'Deskripsi diperbarui',
@@ -66,6 +69,7 @@ class AdminProductManagementTest extends TestCase
             'id' => $createdProduct->id,
             'slug' => 'kaos-baru',
             'name' => 'Kaos Baru',
+            'origin_city' => 'Yogyakarta',
             'price' => 60000,
             'stock' => 8,
             'is_active' => 0,
@@ -141,6 +145,7 @@ class AdminProductManagementTest extends TestCase
         $this->put(route('admin.products.update', $product), [
             'name' => $product->name,
             'category_id' => $category->id,
+            'origin_city' => $product->origin_city,
             'price' => 50000,
             'stock' => 12,
             'image' => $image,
@@ -168,6 +173,7 @@ class AdminProductManagementTest extends TestCase
             'category_id' => $category->id,
             'name' => $name,
             'slug' => $slug,
+            'origin_city' => 'Jakarta',
             'price' => 50000,
             'stock' => 5,
         ]);

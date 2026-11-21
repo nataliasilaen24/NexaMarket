@@ -343,6 +343,10 @@
                         <dt>Alamat Pengiriman</dt>
                         <dd>{{ $order->address }}</dd>
                     </div>
+                    <div class="is-full">
+                        <dt>Catatan Pesanan</dt>
+                        <dd>{{ filled($order->customer_note) ? $order->customer_note : 'Tidak ada catatan.' }}</dd>
+                    </div>
                     <div>
                         <dt>Metode Pengiriman</dt>
                         <dd>{{ ucfirst(str_replace('_', ' ', $order->shipping_method)) }}</dd>

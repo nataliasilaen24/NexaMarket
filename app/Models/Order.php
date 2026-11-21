@@ -14,6 +14,7 @@ class Order extends Model
         'recipient_name',
         'phone',
         'address',
+        'customer_note',
         'shipping_method',
         'shipping_cost',
         'payment_method',

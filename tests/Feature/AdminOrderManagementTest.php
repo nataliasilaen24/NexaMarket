@@ -16,6 +16,7 @@ class AdminOrderManagementTest extends TestCase
         $admin = User::factory()->create(['is_admin' => true]);
         $customer = User::factory()->create(['name' => 'Nadia Pelanggan', 'email' => 'nadia@example.test']);
         $pendingOrder = $this->createOrder($customer, 'NM-PENDING-001', 'pending');
+        $pendingOrder->update(['customer_note' => 'Mohon hubungi sebelum mengantar.']);
         $cancelledOrder = $this->createOrder($customer, 'NM-CANCELLED-001', 'cancelled');
         $this->actingAs($admin);
 
@@ -36,6 +37,7 @@ class AdminOrderManagementTest extends TestCase
             ->assertSee('Nadia Pelanggan')
             ->assertSee('nadia@example.test')
             ->assertSee('Jakarta Selatan')
+            ->assertSee('Mohon hubungi sebelum mengantar.')
             ->assertSee('Kemeja Nexa')
             ->assertSee('Menunggu Pembayaran')
             ->assertSee('Rp 135.000');

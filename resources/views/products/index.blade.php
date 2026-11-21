@@ -85,6 +85,18 @@
         font-size: 12px;
     }
 
+    .shop-product-origin-city {
+        display: block;
+        margin-top: 7px;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .shop-product-origin-city i {
+        margin-right: 4px;
+        color: #2563eb;
+    }
+
     .shop-product-name {
         min-height: 42px;
         margin: 7px 0;
@@ -244,6 +256,9 @@
 
                 <div class="shop-product-info">
                     <span class="shop-product-category">{{ $product->category->name ?? 'Tanpa Kategori' }}</span>
+                    <span class="shop-product-origin-city">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i> Dari {{ $product->origin_city }}
+                    </span>
                     <h2 class="shop-product-name">
                         <a href="{{ route('products.show', $product) }}">{{ $product->name }}</a>
                     </h2>

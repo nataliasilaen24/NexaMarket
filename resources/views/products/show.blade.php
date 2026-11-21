@@ -473,6 +473,13 @@
                             <strong>{{ $product->stock > 0 ? $product->stock . ' unit tersedia' : 'Stok habis' }}</strong>
                         </div>
                     </div>
+                    <div class="meta-item">
+                        <i class="meta-item-icon fa-solid fa-location-dot" aria-hidden="true"></i>
+                        <div>
+                            <span class="meta-item-label">Kota Asal</span>
+                            <strong>{{ $product->origin_city }}</strong>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="description">

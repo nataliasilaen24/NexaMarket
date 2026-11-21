@@ -129,6 +129,7 @@ class ProductSeeder extends Seeder
             $products[$slug] = [
                 'name' => $name,
                 'image' => 'images/products/'.$file->getFilename(),
+                'origin_city' => Product::ORIGIN_CITIES[count($products) % count(Product::ORIGIN_CITIES)],
             ];
         }
 
@@ -139,6 +140,7 @@ class ProductSeeder extends Seeder
             $product->fill([
                 'category_id' => $category->id,
                 'name' => $productData['name'],
+                'origin_city' => $productData['origin_city'],
                 'description' => $product->description ?: $descriptions[$slug],
                 'image' => $productData['image'],
             ]);

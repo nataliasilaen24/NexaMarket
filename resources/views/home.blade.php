@@ -210,6 +210,19 @@
         font-weight: 800;
     }
 
+    .promo-teaser-city,
+    .product-origin-city {
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .promo-teaser-city i,
+    .product-origin-city i {
+        margin-right: 4px;
+        color: #2563eb;
+    }
+
     .promo-teaser-card del,
     .product-original-price {
         color: #94a3b8;
@@ -492,7 +505,7 @@
 
     <!-- Shortcut Menu -->
     <div class="shortcut-menu">
-        <a href="{{ route('promotions.index') }}" class="shortcut-item">
+        <a href="#promo-products" class="shortcut-item">
             <div class="shortcut-icon">⚡</div>
             Flash Sale
         </a>
@@ -524,7 +537,7 @@
     </div>
 
     <!-- Promo -->
-    <div class="promo-products-section">
+    <div class="promo-products-section" id="promo-products">
         <div class="section-header">
             <div class="section-title">Promo Pilihan</div>
 
@@ -542,6 +555,9 @@
                         <div class="product-img" style="display:grid;place-items:center;color:#94a3b8">Tanpa Foto</div>
                     @endif
                     <strong>{{ $promoProduct->name }}</strong>
+                    <span class="promo-teaser-city">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i> Dari {{ $promoProduct->origin_city }}
+                    </span>
                     <span class="promo-teaser-price">Rp {{ number_format($promoProduct->effective_price, 0, ',', '.') }}</span>
                     <del>Rp {{ number_format($promoProduct->price, 0, ',', '.') }}</del>
                 </a>
@@ -595,6 +611,9 @@
                         <div class="product-name">
                             {{ $product->name }}
                         </div>
+                        <span class="product-origin-city">
+                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i> Dari {{ $product->origin_city }}
+                        </span>
 
                         @if($product->is_promo && (float) $product->promo_price < (float) $product->price)
                             <span class="promo-teaser-price">PROMO</span>

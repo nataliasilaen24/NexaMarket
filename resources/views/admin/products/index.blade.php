@@ -185,7 +185,7 @@
 
     .admin-product-table {
         width: 100%;
-        min-width: 900px;
+        min-width: 980px;
         border-collapse: collapse;
         text-align: left;
     }
@@ -259,6 +259,11 @@
 
     .admin-product-category {
         color: #475569;
+    }
+
+    .admin-product-city {
+        color: #475569;
+        white-space: nowrap;
     }
 
     .admin-product-price {
@@ -555,6 +560,7 @@
                     <tr>
                         <th>Produk</th>
                         <th>Kategori</th>
+                        <th>Kota Asal</th>
                         <th>Harga</th>
                         <th>Stok</th>
                         <th>Status</th>
@@ -580,6 +586,10 @@
                                 </div>
                             </td>
                             <td class="admin-product-category">{{ $product->category->name ?? 'Tanpa Kategori' }}</td>
+                            <td class="admin-product-city">
+                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                {{ $product->origin_city }}
+                            </td>
                             <td>
                                 <span class="admin-product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                                 @if($product->is_promo && $product->promo_price)
@@ -655,7 +665,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td class="admin-table-empty" colspan="6">
+                            <td class="admin-table-empty" colspan="7">
                                 <i class="fa-solid fa-box-open" aria-hidden="true"></i>
                                 @if($search !== '')
                                     Produk tidak ditemukan. Coba kata kunci lain.

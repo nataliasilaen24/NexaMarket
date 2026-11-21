@@ -58,6 +58,18 @@
             </label>
 
             <label class="admin-form-field">
+                <span>Kota Asal <b>*</b></span>
+                <select name="origin_city" required>
+                    <option value="">Pilih kota asal</option>
+                    @foreach(\App\Models\Product::ORIGIN_CITIES as $city)
+                        <option value="{{ $city }}" {{ old('origin_city', $product->origin_city) === $city ? 'selected' : '' }}>
+                            {{ $city }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="admin-form-field">
                 <span>Harga (Rp) <b>*</b></span>
                 <input type="number" name="price" value="{{ old('price', $product->price) }}" min="0" step="0.01" required>
             </label>

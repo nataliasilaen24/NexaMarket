@@ -39,10 +39,30 @@ class CustomerCatalogTest extends TestCase
             ->assertOk()
             ->assertSee($product->name)
             ->assertSee('Pakaian')
+            ->assertSee('Jakarta')
             ->assertSee('5 unit tersedia')
             ->assertSee('Tambah ke Keranjang')
             ->assertDontSee('4.9 (2.4rb ulasan)')
             ->assertDontSee('Produk Terbaru');
+    }
+
+    public function test_products_show_their_origin_city_in_the_catalog_and_detail(): void
+    {
+        $product = $this->createProduct();
+        $product->update(['origin_city' => 'Bandung']);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Dari Bandung');
+
+        $this->get(route('shop'))
+            ->assertOk()
+            ->assertSee('Dari Bandung');
+
+        $this->get(route('products.show', $product))
+            ->assertOk()
+            ->assertSee('Kota Asal')
+            ->assertSee('Bandung');
     }
 
     public function test_product_detail_does_not_show_a_promo_when_promo_price_is_missing(): void
@@ -188,6 +208,8 @@ class CustomerCatalogTest extends TestCase
             ->assertOk()
             ->assertSee('Promo Pilihan')
             ->assertSee('Kaos Tes')
+            ->assertSee('href="#promo-products"', false)
+            ->assertSee('id="promo-products"', false)
             ->assertSee(route('promotions.index'), false)
             ->assertDontSee('Belanja Sesuai Duniamu')
             ->assertDontSee('categories.index');

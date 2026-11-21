@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -147,6 +148,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'origin_city' => ['required', 'string', Rule::in(Product::ORIGIN_CITIES)],
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'is_active' => 'sometimes|boolean',
@@ -202,6 +204,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'origin_city' => ['required', 'string', Rule::in(Product::ORIGIN_CITIES)],
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'is_active' => 'sometimes|boolean',
